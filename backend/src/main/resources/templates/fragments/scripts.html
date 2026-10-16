@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="scripts">
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Core Application Logic -->
+    <script th:src="@{/js/dashboard.js}"></script>
+    <script th:src="@{/js/relay.js}"></script>
+    <script th:src="@{/js/chart.js}"></script>
+    <script th:src="@{/js/ai.js}"></script>
+</div>
+
+</html>

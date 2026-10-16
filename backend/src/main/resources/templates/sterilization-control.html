@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Sterilization Control')}"></head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Navbar -->
+            <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Sterilization Control</h2>
+                    <p class="text-muted mb-0" style="font-size: 0.9rem;">Control and manage the sterilization process
+                    </p>
+                </div>
+                <div>
+                    <button class="btn btn-outline-custom" id="btnPageRefresh"><i
+                            class="bi bi-arrow-clockwise me-2"></i>Refresh</button>
+                </div>
+            </div>
+
+            <div class="content-wrapper">
+                <div class="row g-4 h-100">
+
+                    <!-- Left Column: Workflow Steps -->
+                    <div class="col-lg-4">
+                        <div class="custom-card h-100">
+                            <div class="card-title-sm">Current Process</div>
+
+
+
+                            <div class="position-relative ms-2 mt-4 text-start" id="workflow-stepper">
+                                <!-- Vertical line -->
+                                <div class="position-absolute bg-light border"
+                                    style="left: 15px; top: 15px; bottom: 20px; width: 2px;"></div>
+
+                                <!-- Step 1: Room Empty -->
+                                <div class="d-flex align-items-start mb-4 position-relative" id="step-1">
+                                    <div class="d-flex align-items-center justify-content-center border bg-white rounded-circle z-1 step-icon"
+                                        style="width:32px; height:32px;">1</div>
+                                    <div class="ms-3 pt-1">
+                                        <div class="d-flex align-items-baseline">
+                                            <div class="fw-semibold step-label">1 &nbsp; Room Empty</div>
+                                            <div class="ms-2 text-muted expected-time" id="time-step-1"
+                                                style="font-size:0.85rem">--</div>
+                                        </div>
+                                        <small class="step-status text-muted">Offline</small>
+                                    </div>
+                                </div>
+                                <!-- Step 2: Door Closed -->
+                                <div class="d-flex align-items-start mb-4 position-relative" id="step-2">
+                                    <div class="d-flex align-items-center justify-content-center border bg-white rounded-circle z-1 step-icon"
+                                        style="width:32px; height:32px;">2</div>
+                                    <div class="ms-3 pt-1">
+                                        <div class="d-flex align-items-baseline">
+                                            <div class="fw-semibold step-label">2 &nbsp; Door Closed</div>
+                                            <div class="ms-2 text-muted expected-time" id="time-step-2"
+                                                style="font-size:0.85rem">--</div>
+                                        </div>
+                                        <small class="step-status text-muted">Offline</small>
+                                    </div>
+                                </div>
+                                <!-- Step 3: UV-C Lamp -->
+                                <div class="d-flex align-items-start mb-4 position-relative" id="step-3">
+                                    <div class="d-flex align-items-center justify-content-center border bg-white rounded-circle z-1 step-icon"
+                                        style="width:32px; height:32px;">3</div>
+                                    <div class="ms-3 pt-1">
+                                        <div class="d-flex align-items-baseline">
+                                            <div class="fw-semibold step-label">3 &nbsp; UV-C Lamp</div>
+                                            <div class="ms-2 text-muted expected-time" id="time-step-3"
+                                                style="font-size:0.85rem">--</div>
+                                        </div>
+                                        <small class="step-status text-muted">Offline</small>
+                                    </div>
+                                </div>
+                                <!-- Step 4: Fogging -->
+                                <div class="d-flex align-items-start mb-4 position-relative" id="step-4">
+                                    <div class="d-flex align-items-center justify-content-center border bg-white rounded-circle z-1 step-icon"
+                                        style="width:32px; height:32px;">4</div>
+                                    <div class="ms-3 pt-1">
+                                        <div class="d-flex align-items-baseline">
+                                            <div class="fw-semibold step-label">4 &nbsp; Fogging</div>
+                                            <div class="ms-2 text-muted expected-time" id="time-step-4"
+                                                style="font-size:0.85rem">--</div>
+                                        </div>
+                                        <small class="step-status text-muted">Offline</small>
+                                    </div>
+                                </div>
+                                <!-- Step 5: Air Purification -->
+                                <div class="d-flex align-items-start mb-4 position-relative" id="step-5">
+                                    <div class="d-flex align-items-center justify-content-center border bg-white rounded-circle z-1 step-icon"
+                                        style="width:32px; height:32px;">5</div>
+                                    <div class="ms-3 pt-1">
+                                        <div class="d-flex align-items-baseline">
+                                            <div class="fw-semibold step-label">5 &nbsp; Air Purification</div>
+                                            <div class="ms-2 text-muted expected-time" id="time-step-5"
+                                                style="font-size:0.85rem">--</div>
+                                        </div>
+                                        <small class="step-status text-muted">Offline</small>
+                                    </div>
+                                </div>
+                                <!-- Step 6: Air Quality Check -->
+                                <div class="d-flex align-items-start mb-4 position-relative" id="step-6">
+                                    <div class="d-flex align-items-center justify-content-center border bg-white rounded-circle z-1 step-icon"
+                                        style="width:32px; height:32px;">6</div>
+                                    <div class="ms-3 pt-1">
+                                        <div class="d-flex align-items-baseline">
+                                            <div class="fw-semibold step-label">6 &nbsp; Air Quality Check</div>
+                                            <div class="ms-2 text-muted expected-time" id="time-step-6"
+                                                style="font-size:0.85rem">--</div>
+                                        </div>
+                                        <small class="step-status text-muted">Offline</small>
+                                    </div>
+                                </div>
+                                <!-- Step 7: Room Ready -->
+                                <div class="d-flex align-items-start position-relative" id="step-7">
+                                    <div class="d-flex align-items-center justify-content-center border bg-white rounded-circle z-1 step-icon"
+                                        style="width:32px; height:32px;">7</div>
+                                    <div class="ms-3 pt-1">
+                                        <div class="d-flex align-items-baseline">
+                                            <div class="fw-semibold step-label">7 &nbsp; Room Ready</div>
+                                            <div class="ms-2 text-muted expected-time" id="time-step-7"
+                                                style="font-size:0.85rem">--</div>
+                                        </div>
+                                        <small class="step-status text-muted">Offline</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Middle Column: Process Details -->
+                    <div class="col-lg-5">
+                        <div class="custom-card h-100 d-flex flex-column text-center">
+                            <div class="card-title-sm text-start mb-5">Process Details</div>
+                            <div class="my-auto">
+                                <!-- Progress Ring (SVG) -->
+                                <div class="position-relative d-inline-flex justify-content-center align-items-center mb-4"
+                                    style="width:200px; height:200px;" id="prog-wrapper">
+                                    <svg id="prog-svg" viewBox="0 0 100 100" width="200" height="200"
+                                        style="position:absolute;left:0;top:0;">
+                                        <circle class="prog-track" cx="50" cy="50" r="45" fill="none" stroke="#e5e7eb"
+                                            stroke-width="8" />
+                                        <circle class="prog-fill" cx="50" cy="50" r="45" fill="none"
+                                            stroke="var(--primary)" stroke-width="8" stroke-linecap="round"
+                                            transform="rotate(-90 50 50)" stroke-dasharray="282.743"
+                                            stroke-dashoffset="282.743" />
+                                        <g class="prog-snake" style="transform-origin:50% 50%;">
+                                            <circle cx="50" cy="50" r="45" fill="none" stroke="#7c3aed" stroke-width="8"
+                                                stroke-linecap="round" stroke-dasharray="20 262.743" />
+                                        </g>
+                                    </svg>
+                                    <div class="position-absolute bg-white rounded-circle d-flex flex-column justify-content-center align-items-center"
+                                        style="width:170px; height:170px;">
+                                        <div class="fs-1 fw-bold text-muted" id="prog-text">--</div>
+                                    </div>
+                                </div>
+                                <!-- Process Status Label -->
+                                <h4 class="mb-2 text-muted" id="proc-label">Device Offline</h4>
+                                <div id="proc-meta" class="text-muted" style="font-size:0.95rem">
+                                    <span id="proc-remaining">Remaining: --:--</span>
+                                    &nbsp;&nbsp;•&nbsp;&nbsp;
+                                    <span>Next: <strong id="proc-next">—</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Control Actions -->
+                    <div class="col-lg-3">
+                        <div class="custom-card h-100">
+                            <div class="card-title-sm">Control Actions</div>
+
+                            <!-- Offline notice in actions panel -->
+                            <div id="ctrl-offline-notice" class="mt-3 mb-2 text-center text-muted"
+                                style="font-size:0.82rem;">
+                                <i class="bi bi-wifi-off me-1"></i> Connect hardware to enable controls
+                            </div>
+
+                            <div class="d-flex flex-column gap-3 mt-2" id="ctrl-buttons">
+                                <button class="btn btn-success fw-bold py-3 text-white border-0 shadow-sm"
+                                    style="background-color: var(--primary);" id="btnStart" disabled>
+                                    <i class="bi bi-play-fill fs-5 me-2"></i> START STERILIZATION
+                                </button>
+                                <button class="btn fw-bold py-3 text-dark border shadow-sm"
+                                    style="background-color: #fef08a;" id="btnPause" disabled>
+                                    <i class="bi bi-pause-fill fs-5 me-2"></i> PAUSE
+                                </button>
+                                <button class="btn fw-bold py-3 text-white border-0 shadow-sm mt-3"
+                                    style="background-color: #991b1b;" id="btnEmergencyStop" disabled>
+                                    <i class="bi bi-exclamation-triangle-fill fs-5 me-2"></i> EMERGENCY STOP
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+    <script>
+        document.getElementById('nav-sterilization').classList.add('active');
+
+        // -------------------------------------------------------
+        // State
+        // -------------------------------------------------------
+        let deviceOnline = false;
+        let sterilRunning = false;
+        let sterilPaused = false;
+        let pollTimer = null;
+
+        /**
+         * Format seconds into a human-readable string.
+         * < 60s → "XX sec"  |  >= 60s → "X min YY sec"
+         */
+        function fmtDuration(s) {
+            if (s == null || s === Infinity || isNaN(s) || s < 0) return '--';
+            s = Math.round(s);
+            if (s < 60) return s + ' sec';
+            const m = Math.floor(s / 60);
+            const sec = s % 60;
+            return sec > 0 ? `${m} min ${sec.toString().padStart(2, '0')} sec` : `${m} min`;
+        }
+
+        function fmtShort(s) {
+            if (s == null || s === Infinity || isNaN(s) || s < 0) return '--:--';
+            s = Math.round(s);
+            if (s < 60) return s + 's';
+            const m = Math.floor(s / 60);
+            const sec = s % 60;
+            return `${m}m${sec.toString().padStart(2, '0')}s`;
+        }
+
+        // -------------------------------------------------------
+        // Step rendering helpers
+        // -------------------------------------------------------
+        const STEPS = ['step-1', 'step-2', 'step-3', 'step-4', 'step-5', 'step-6', 'step-7'];
+
+        function setStepState(stepId, state, timeLabel) {
+            const el = document.getElementById(stepId);
+            if (!el) return;
+            const icon = el.querySelector('.step-icon');
+            const statusEl = el.querySelector('.step-status');
+            const labelEl = el.querySelector('.step-label');
+            const timeEl = el.querySelector('.expected-time');
+
+            icon.className = 'd-flex align-items-center justify-content-center border bg-white rounded-circle z-1 step-icon';
+            icon.style.width = '32px'; icon.style.height = '32px';
+            labelEl.className = 'fw-semibold step-label';
+
+            if (state === 'offline') {
+                statusEl.textContent = 'Offline';
+                statusEl.className = 'step-status text-muted';
+                icon.style.color = '#9ca3af';
+            } else if (state === 'pending') {
+                statusEl.textContent = 'Pending';
+                statusEl.className = 'step-status text-muted';
+                icon.style.color = '#9ca3af';
+            } else if (state === 'active') {
+                icon.classList.add('border-primary');
+                icon.style.color = 'var(--primary)';
+                labelEl.classList.add('text-primary');
+                statusEl.textContent = 'In Progress';
+                statusEl.className = 'step-status text-primary';
+            } else if (state === 'completed') {
+                icon.classList.add('border-success');
+                icon.style.color = 'var(--success)';
+                icon.innerHTML = '<i class="bi bi-check"></i>';
+                statusEl.textContent = 'Completed';
+                statusEl.className = 'step-status text-success';
+            } else if (state === 'paused') {
+                icon.classList.add('border-warning');
+                icon.style.color = '#f59e0b';
+                labelEl.classList.add('text-warning');
+                statusEl.textContent = '⚠ Paused';
+                statusEl.className = 'step-status text-warning';
+            }
+
+            if (timeEl && timeLabel) timeEl.textContent = timeLabel;
+        }
+
+        function setAllSteps(state) {
+            STEPS.forEach(s => setStepState(s, state, '--'));
+        }
+
+        // -------------------------------------------------------
+        // Progress Ring
+        // -------------------------------------------------------
+        function setProgress(pct, label, color) {
+            const txt = pct === 0 ? '--' : pct + '%';
+            const progText = document.getElementById('prog-text');
+            progText.textContent = txt;
+            progText.style.color = pct === 0 ? '#9ca3af' : (color || 'var(--primary)');
+            document.getElementById('proc-label').textContent = label;
+
+            const fill = document.querySelector('.prog-fill');
+            const snake = document.querySelector('.prog-snake');
+            if (!fill || !snake) return;
+            const circumference = 2 * Math.PI * 45;
+            const offset = Math.round(((100 - Math.max(0, Math.min(100, pct))) / 100) * circumference);
+            fill.style.transition = 'stroke-dashoffset 800ms ease';
+            fill.style.strokeDashoffset = offset;
+            fill.style.stroke = color || 'var(--primary)';
+
+            if (pct > 0) {
+                snake.style.animation = 'rotate-snake 3s linear infinite';
+                snake.style.opacity = '1';
+            } else {
+                snake.style.animation = '';
+                snake.style.opacity = '0';
+            }
+        }
+
+        // Snake animation keyframes
+        (function injectSnakeKeyframes() {
+            const id = 'snake-keyframes';
+            if (document.getElementById(id)) return;
+            const style = document.createElement('style');
+            style.id = id;
+            style.innerHTML = `@keyframes rotate-snake { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } .prog-snake { opacity: 0; transition: opacity 300ms ease; }`;
+            document.head.appendChild(style);
+        })();
+
+        // -------------------------------------------------------
+        // Enable / Disable buttons
+        // -------------------------------------------------------
+        function enableControls(on) {
+            document.getElementById('btnStart').disabled = !on;
+            document.getElementById('btnPause').disabled = !on;
+            document.getElementById('btnEmergencyStop').disabled = !on;
+            document.getElementById('ctrl-offline-notice').style.display = on ? 'none' : '';
+        }
+
+        // -------------------------------------------------------
+        // Online / Offline helpers
+        // -------------------------------------------------------
+        function goOffline() {
+            deviceOnline = false;
+            enableControls(false);
+            setAllSteps('offline');
+            setProgress(0, 'Device Offline', '#9ca3af');
+            document.getElementById('proc-remaining').textContent = 'Remaining: --:--';
+            document.getElementById('proc-next').textContent = '—';
+            const banner = document.getElementById('offline-banner');
+            if (banner) banner.style.display = '';
+        }
+
+        function goOnline() {
+            deviceOnline = true;
+            enableControls(true);
+            const banner = document.getElementById('offline-banner');
+            if (banner) banner.style.display = 'none';
+        }
+
+        // -------------------------------------------------------
+        // Map backend state to step number
+        // -------------------------------------------------------
+        function stateToStep(backendState) {
+            const map = {
+                'IDLE': 0, 'PREPARING': 1, 'SAFETY_CHECK': 2,
+                'AI_ANALYSIS': 2, 'UV_RUNNING': 3, 'UV_COMPLETED': 3,
+                'FOGGING_RUNNING': 4, 'FOGGING_COMPLETED': 4,
+                'EXHAUST_RUNNING': 5, 'EXHAUST_COMPLETED': 5,
+                'REPORT_GENERATION': 6, 'COMPLETED': 7,
+                'PAUSED': -1, 'ERROR': -2
+            };
+            return map[backendState] ?? 0;
+        }
+
+        // -------------------------------------------------------
+        // MAIN POLLING — uses /api/sterilization/status + /api/sensors/latest
+        // -------------------------------------------------------
+        async function pollStatus() {
+            try {
+                const token = localStorage.getItem('token') || '';
+                const headers = { 'Authorization': 'Bearer ' + token };
+
+                // 1. Check device online status from sensor endpoint
+                let sd = null;
+                try {
+                    const sensorRes = await fetch('/api/sensors/latest', { headers });
+                    if (sensorRes.ok) {
+                        const sensorJson = await sensorRes.json();
+                        sd = sensorJson.data || sensorJson;
+                    }
+                } catch (e) { /* sensor fetch failed, continue anyway */ }
+
+                const isDeviceOnline = sd && sd.deviceOnline;
+                if (isDeviceOnline && !deviceOnline) goOnline();
+
+                // 2. ALWAYS get sterilization state from backend state machine
+                const sterilRes = await fetch('/api/sterilization/status', { headers });
+                if (!sterilRes.ok) { if (!isDeviceOnline) goOffline(); return; }
+                const sterilJson = await sterilRes.json();
+                const st = sterilJson.data || sterilJson;
+                if (!st || !st.currentState) { if (!isDeviceOnline) goOffline(); return; }
+
+                const state = st.currentState;
+                const isActiveCycle = !['IDLE', 'COMPLETED', 'ERROR'].includes(state);
+
+                // Only show full offline if device is down AND no cycle is active
+                if (!isDeviceOnline && !isActiveCycle && state === 'IDLE') {
+                    goOffline();
+                    return;
+                }
+                if (!deviceOnline && (isActiveCycle || isDeviceOnline)) goOnline();
+
+                // Use sensor data for IDLE readiness checks (may be null if offline)
+                if (!sd) sd = {};
+
+                const curStep = stateToStep(state);
+                sterilRunning = ['UV_RUNNING', 'FOGGING_RUNNING', 'EXHAUST_RUNNING'].includes(state);
+                sterilPaused = state === 'PAUSED';
+
+                // Update step time labels with AI-predicted durations
+                const stepTimeLabels = {
+                    1: '--',
+                    2: '--',
+                    3: st.aiUvSeconds > 0 ? fmtDuration(st.aiUvSeconds) : '--',
+                    4: st.aiFogSeconds > 0 ? fmtDuration(st.aiFogSeconds) : '--',
+                    5: st.aiFanSeconds > 0 ? fmtDuration(st.aiFanSeconds) : '--',
+                    6: '--',
+                    7: '--'
+                };
+
+                // Update Start Button status
+                const btnStart = document.getElementById('btnStart');
+                if (['IDLE', 'COMPLETED', 'ERROR'].includes(state)) {
+                    btnStart.disabled = false;
+                    btnStart.innerHTML = '<i class="bi bi-play-fill fs-5 me-2"></i> START CYCLE';
+                } else {
+                    btnStart.disabled = true;
+                    btnStart.innerHTML = '<i class="bi bi-hourglass-split me-2"></i> RUNNING...';
+                }
+
+                // Determine step states based on current backend state
+                if (state === 'IDLE') {
+                    // Device is online but idle: show sensor-based readiness
+                    const doorOk = sd.doorClosed === true;
+                    const noMotion = sd.motionDetected !== true;
+                    setStepState('step-1', noMotion ? 'completed' : 'active', '--');
+                    setStepState('step-2', (noMotion && doorOk) ? 'completed' : 'pending', '--');
+                    for (let k = 3; k <= 7; k++) setStepState('step-' + k, 'pending', stepTimeLabels[k]);
+                    setProgress(0, (noMotion && doorOk) ? 'Ready to Start' : 'Resolve Issues First',
+                        (noMotion && doorOk) ? 'var(--success)' : '#f59e0b');
+                    document.getElementById('proc-remaining').textContent = st.totalPredictedSeconds > 0
+                        ? 'Total: ' + fmtDuration(st.totalPredictedSeconds) : 'Remaining: --:--';
+                    document.getElementById('proc-next').textContent =
+                        (st.aiAvailable && st.totalPredictedSeconds > 0) ? 'AI Ready' : 'Waiting';
+                } else if (state === 'COMPLETED') {
+                    setStepState('step-1', 'completed', '--');
+                    setStepState('step-2', 'completed', '--');
+                    for (let k = 3; k <= 7; k++) setStepState('step-' + k, 'completed', stepTimeLabels[k]);
+                    setProgress(100, 'Cycle Complete ✅', '#16a34a');
+                    document.getElementById('proc-remaining').textContent = 'Press Start for next cycle';
+                    document.getElementById('proc-next').textContent = 'Ready';
+                } else if (state === 'ERROR') {
+                    setAllSteps('pending');
+                    setProgress(0, '🚨 Cycle Aborted', '#dc2626');
+                    document.getElementById('proc-remaining').textContent = st.errorMessage || 'Error';
+                    document.getElementById('proc-next').textContent = '—';
+                } else if (state === 'PAUSED') {
+                    for (let k = 1; k <= 7; k++) {
+                        const step = 'step-' + k;
+                        if (k < curStep || k <= 2) setStepState(step, 'completed', stepTimeLabels[k]);
+                        else setStepState(step, 'paused', stepTimeLabels[k]);
+                    }
+                    setProgress(st.progressPercent || 30, '⚠ Paused — Safety Event', '#f59e0b');
+                    document.getElementById('proc-remaining').textContent =
+                        st.currentPhaseRemainingSeconds >= 0
+                            ? 'Remaining: ' + fmtShort(st.currentPhaseRemainingSeconds)
+                            : 'Paused';
+                    document.getElementById('proc-next').textContent = st.currentPhaseName || 'Resume';
+                } else {
+                    // Active phase: PREPARING, SAFETY_CHECK, AI_ANALYSIS, UV_RUNNING, etc.
+                    if (state === 'PREPARING' || state === 'SAFETY_CHECK') {
+                        setStepState('step-1', 'active', '--');
+                        setStepState('step-2', 'active', '--');
+                    } else {
+                        setStepState('step-1', 'completed', '--');
+                        setStepState('step-2', 'completed', '--');
+                    }
+                    for (let k = 3; k <= 7; k++) {
+                        if (k < curStep) setStepState('step-' + k, 'completed', stepTimeLabels[k]);
+                        else if (k === curStep) setStepState('step-' + k, 'active',
+                            st.currentPhaseRemainingSeconds >= 0 ? fmtShort(st.currentPhaseRemainingSeconds) : stepTimeLabels[k]);
+                        else setStepState('step-' + k, 'pending', stepTimeLabels[k]);
+                    }
+
+                    const pct = st.progressPercent || 0;
+                    const colors = {
+                        'PREPARING': '#6366f1', 'SAFETY_CHECK': '#6366f1',
+                        'AI_ANALYSIS': '#8b5cf6',
+                        'UV_RUNNING': '#7c3aed', 'UV_COMPLETED': '#7c3aed',
+                        'FOGGING_RUNNING': '#0891b2', 'FOGGING_COMPLETED': '#0891b2',
+                        'EXHAUST_RUNNING': '#059669', 'EXHAUST_COMPLETED': '#059669',
+                        'REPORT_GENERATION': '#16a34a'
+                    };
+                    setProgress(pct, st.currentStateLabel || state, colors[state] || 'var(--primary)');
+
+                    const remEl = document.getElementById('proc-remaining');
+                    if (st.currentPhaseRemainingSeconds > 0 && sterilRunning) {
+                        remEl.textContent = 'Time Left: ' + fmtShort(st.currentPhaseRemainingSeconds);
+                    } else if (st.totalRemainingSeconds >= 0 && sterilRunning) {
+                        remEl.textContent = 'Total: ' + fmtShort(st.totalRemainingSeconds);
+                    } else {
+                        remEl.textContent = st.currentStateLabel || 'Processing...';
+                    }
+
+                    // Next phase
+                    const nextMap = {
+                        'PREPARING': 'Safety Check', 'SAFETY_CHECK': 'AI Analysis',
+                        'AI_ANALYSIS': 'UV-C', 'UV_RUNNING': 'Fogging',
+                        'UV_COMPLETED': 'Fogging', 'FOGGING_RUNNING': 'Exhaust',
+                        'FOGGING_COMPLETED': 'Exhaust', 'EXHAUST_RUNNING': 'Verification',
+                        'EXHAUST_COMPLETED': 'Report', 'REPORT_GENERATION': 'Complete'
+                    };
+                    document.getElementById('proc-next').textContent = nextMap[state] || '—';
+                }
+
+            } catch (e) { goOffline(); }
+        }
+
+        async function sendCommand(cmd) {
+            try {
+                const token = localStorage.getItem('token') || '';
+                const headers = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
+                let state = (cmd === 'START') ? 'true' : 'false';
+                await fetch(`/api/device/ESP32_OT_NODE/command/relay/${state}`, { method: 'POST', headers });
+                if (cmd === 'STOP') {
+                    await fetch(`/api/device/ESP32_OT_NODE/command/uvlamp/false`, { method: 'POST', headers });
+                    await fetch(`/api/device/ESP32_OT_NODE/command/humidifier/false`, { method: 'POST', headers });
+                    await fetch(`/api/device/ESP32_OT_NODE/command/exhaustfan/false`, { method: 'POST', headers });
+                }
+            } catch (e) { console.error('Command failed:', e); }
+        }
+
+        // -------------------------------------------------------
+        // START STERILIZATION (calls backend state machine)
+        // -------------------------------------------------------
+        document.getElementById('btnStart').addEventListener('click', async () => {
+            if (!deviceOnline) return;
+            const btn = document.getElementById('btnStart');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i> STARTING...';
+
+            try {
+                const token = localStorage.getItem('token') || '';
+                const res = await fetch('/api/sterilization/start', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!res.ok) {
+                    const msg = await res.text();
+                    // Ignore the brief race-condition lock error after completion (PREPARING)
+                    // but show it if it's clicked during an actual active cycle
+                    if (!msg.includes("already in progress: PREPARING")) {
+                        alert('Could not start sterilization: ' + msg);
+                    }
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-play-fill fs-5 me-2"></i> START CYCLE';
+                }
+            } catch (e) {
+                alert('Could not reach the backend to start sterilization.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-play-fill fs-5 me-2"></i> START CYCLE';
+            }
+        });
+
+        document.getElementById('btnPause').addEventListener('click', async () => {
+            if (sterilPaused) {
+                // Resume
+                try {
+                    const token = localStorage.getItem('token') || '';
+                    const res = await fetch('/api/sterilization/resume', {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                    if (!res.ok) {
+                        const msg = await res.text();
+                        alert('Could not resume: ' + msg);
+                    }
+                } catch (e) { alert('Resume failed.'); }
+                document.getElementById('btnPause').innerHTML = '<i class="bi bi-pause-fill fs-5 me-2"></i> PAUSE';
+            } else if (sterilRunning) {
+                // Pause the backend state machine
+                try {
+                    const token = localStorage.getItem('token') || '';
+                    const res = await fetch('/api/sterilization/pause', {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ reason: 'Operator pressed pause manually' })
+                    });
+                    if (!res.ok) alert('Could not pause: ' + await res.text());
+                } catch (e) { alert('Pause failed.'); }
+                document.getElementById('btnPause').innerHTML = '<i class="bi bi-play-fill fs-5 me-2"></i> RESUME';
+            }
+        });
+
+        // -------------------------------------------------------
+        // EMERGENCY STOP
+        // -------------------------------------------------------
+        document.getElementById('btnEmergencyStop').addEventListener('click', async () => {
+            sterilRunning = false;
+            sterilPaused = false;
+            await sendCommand('STOP');
+            try {
+                const token = localStorage.getItem('token') || '';
+                await fetch('/api/sterilization/abort', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ reason: 'Emergency Stop by operator' })
+                });
+            } catch (e) { }
+            document.getElementById('btnPause').innerHTML = '<i class="bi bi-pause-fill fs-5 me-2"></i> PAUSE';
+            setAllSteps('pending');
+            setProgress(0, '⚠ Emergency Stop Activated', '#dc2626');
+        });
+
+        // -------------------------------------------------------
+        // Page Refresh
+        // -------------------------------------------------------
+        document.getElementById('btnPageRefresh').addEventListener('click', () => window.location.reload());
+
+        // -------------------------------------------------------
+        // Initialize and start polling
+        // -------------------------------------------------------
+        setAllSteps('offline');
+        setProgress(0, 'Device Offline', '#9ca3af');
+        enableControls(false);
+        pollStatus();
+        setInterval(pollStatus, 1000);
+    </script>
+</body>
+
+</html>

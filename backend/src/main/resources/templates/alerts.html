@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Alerts')}"></head>
+<style>
+    .nav-tabs .nav-link {
+        color: var(--text-muted);
+        border: none;
+        padding-bottom: 12px;
+        margin-right: 24px;
+        font-weight: 500;
+    }
+
+    .nav-tabs .nav-link:hover {
+        border-color: transparent;
+        color: var(--text-main);
+    }
+
+    .nav-tabs .nav-link.active {
+        color: var(--primary);
+        background-color: transparent;
+        border: none;
+        border-bottom: 2px solid var(--primary);
+        font-weight: 600;
+    }
+
+    .nav-tabs {
+        border-bottom: 1px solid var(--border-color);
+    }
+</style>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Navbar -->
+            <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Alerts</h2>
+                    <p class="text-muted mb-0" style="font-size: 0.9rem;">View all system alerts and notifications</p>
+                </div>
+            </div>
+
+            <div class="content-wrapper">
+                <div class="custom-card h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                        <ul class="nav nav-tabs flex-grow-1" id="alertsTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active rounded-0" id="all-tab" data-bs-toggle="tab"
+                                    data-bs-target="#all" type="button" role="tab" aria-selected="true">
+                                    <span class="badge rounded-pill bg-success me-2"
+                                        style="background-color: var(--primary) !important;">All Alerts</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link rounded-0" id="critical-tab" data-bs-toggle="tab"
+                                    data-bs-target="#critical" type="button" role="tab"
+                                    aria-selected="false">Critical</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link rounded-0" id="warnings-tab" data-bs-toggle="tab"
+                                    data-bs-target="#warnings" type="button" role="tab"
+                                    aria-selected="false">Warnings</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link rounded-0" id="info-tab" data-bs-toggle="tab"
+                                    data-bs-target="#info" type="button" role="tab"
+                                    aria-selected="false">Information</button>
+                            </li>
+                        </ul>
+                        <div>
+                            <button id="btnMarkAllRead" class="btn btn-outline-custom"
+                                style="padding: 6px 16px; border-color:#bbf7d0; color:var(--primary); background-color:#f0fdf4;"><i
+                                    class="bi bi-check-all me-1"></i> Mark all as read</button>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="alertsTabContent">
+                        <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-custom">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>Alert</th>
+                                            <th>Type</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="alerts-table-body">
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-4">Fetching active system
+                                                alerts...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+    <script>
+        document.getElementById('nav-alerts').classList.add('active');
+
+        document.getElementById('btnMarkAllRead').addEventListener('click', () => {
+            alert('All alerts have been marked as read.');
+            window.location.reload();
+        });
+
+        async function fetchAlerts() {
+            try {
+                const response = await fetch('/api/logs/latest?count=20');
+                if (!response.ok) return;
+                const logs = await response.json();
+
+                const tbody = document.getElementById('alerts-table-body');
+                tbody.innerHTML = '';
+
+                if (logs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted fw-bold">No recent alerts.</td></tr>';
+                    return;
+                }
+
+                logs.forEach((log) => {
+                    const ts = new Date(log.timestamp);
+                    const tStr = ts.toLocaleTimeString() + ' | ' + ts.toLocaleDateString();
+
+                    let textColor = 'text-primary';
+                    let typeText = 'Information';
+
+                    if (log.level === 'ERROR') {
+                        textColor = 'text-danger';
+                        typeText = 'Critical';
+                    } else if (log.message.includes("Unsafe") || log.message.includes("Motion")) {
+                        textColor = 'text-warning';
+                        typeText = 'Warning';
+                    }
+
+                    const row = `<tr>
+                        <td class="text-muted">${tStr}</td>
+                        <td class="fw-medium ${textColor}">${log.message}</td>
+                        <td class="${textColor}">${typeText}</td>
+                        <td><span class="badge rounded-pill px-3 py-2 bg-success bg-opacity-10 text-success" style="border: 1px solid #bbf7d0;">Logged</span></td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } catch (e) {
+                console.error("Failed to load alerts");
+            }
+        }
+
+        fetchAlerts();
+    </script>
+</body>
+
+</html>

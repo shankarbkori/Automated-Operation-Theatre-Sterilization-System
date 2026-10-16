@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Settings')}"></head>
+<style>
+    .nav-tabs .nav-link {
+        color: var(--text-muted);
+        border: none;
+        padding-bottom: 12px;
+        margin-right: 24px;
+        font-weight: 500;
+    }
+
+    .nav-tabs .nav-link:hover {
+        border-color: transparent;
+        color: var(--text-main);
+    }
+
+    .nav-tabs .nav-link.active {
+        color: var(--primary);
+        background-color: transparent;
+        border: none;
+        border-bottom: 2px solid var(--primary);
+        font-weight: 600;
+    }
+
+    .nav-tabs {
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .form-control,
+    .form-select {
+        border-color: var(--border-color);
+        color: var(--text-main);
+        font-size: 0.9rem;
+        padding: 10px 16px;
+    }
+
+    .form-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+    }
+
+    .save-toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 9999;
+        min-width: 260px;
+    }
+
+    .user-badge {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 20px;
+    }
+
+    .badge-admin {
+        background: rgba(59, 130, 246, 0.15);
+        color: #3b82f6;
+    }
+
+    .badge-superadmin {
+        background: rgba(139, 92, 246, 0.15);
+        color: #8b5cf6;
+    }
+
+    .badge-technician {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+    }
+
+    .badge-doctor {
+        background: rgba(245, 158, 11, 0.15);
+        color: #f59e0b;
+    }
+
+    .relay-toggle {
+        cursor: pointer;
+    }
+
+    .threshold-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .threshold-label {
+        min-width: 160px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-muted);
+    }
+</style>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Navbar -->
+            <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Settings</h2>
+                    <p class="text-muted mb-0" style="font-size: 0.9rem;">Configure system settings and parameters</p>
+                </div>
+            </div>
+
+            <div class="content-wrapper">
+                <div class="custom-card h-100">
+                    <ul class="nav nav-tabs mb-5" id="settingsTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active rounded-0" data-bs-toggle="tab" data-bs-target="#general"
+                                type="button" role="tab">
+                                <span class="badge rounded-pill me-2"
+                                    style="background-color: var(--primary) !important;">General</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-0" data-bs-toggle="tab" data-bs-target="#sensors"
+                                type="button" role="tab">Sensors</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-0" data-bs-toggle="tab" data-bs-target="#notifications"
+                                type="button" role="tab">Notifications</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-0" data-bs-toggle="tab" data-bs-target="#users"
+                                type="button" role="tab">Users</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-0" data-bs-toggle="tab" data-bs-target="#system"
+                                type="button" role="tab">System</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+
+                        <!-- ─── GENERAL TAB ─── -->
+                        <div class="tab-pane fade show active" id="general" role="tabpanel">
+                            <div class="row g-5">
+                                <div class="col-lg-7">
+                                    <h6 class="fw-bold mb-4" style="color: var(--text-main);">General Settings</h6>
+                                    <form id="generalForm">
+                                        <div class="mb-4">
+                                            <label class="form-label">Hospital Name</label>
+                                            <input type="text" class="form-control bg-light" id="hospitalName"
+                                                value="City Hospital">
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="form-label">OT Room Name</label>
+                                            <input type="text" class="form-control bg-light" id="otRoomName"
+                                                value="OT - 1">
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="form-label">Time Zone</label>
+                                            <select class="form-select bg-light" id="timezone">
+                                                <option selected>UTC+05:30 Asia/Kolkata</option>
+                                                <option>UTC+00:00 GMT</option>
+                                                <option>UTC-05:00 Eastern Time</option>
+                                            </select>
+                                        </div>
+                                        <div class="row g-4 mb-4">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Date Format</label>
+                                                <select class="form-select bg-light" id="dateFormat">
+                                                    <option selected>DD/MM/YYYY</option>
+                                                    <option>MM/DD/YYYY</option>
+                                                    <option>YYYY-MM-DD</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Time Format</label>
+                                                <select class="form-select bg-light" id="timeFormat">
+                                                    <option selected>12 Hour</option>
+                                                    <option>24 Hour</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-primary-custom px-4 mt-3"
+                                            onclick="saveGeneral()">Save Changes</button>
+                                    </form>
+                                </div>
+
+                                <div class="col-lg-5">
+                                    <h6 class="fw-bold mb-4" style="color: var(--text-main);">System Information</h6>
+                                    <table class="table table-borderless" style="font-size: 0.9rem;">
+                                        <tbody>
+                                            <tr class="border-bottom">
+                                                <td class="text-muted fw-semibold py-3" style="width:140px;">Device Name
+                                                </td>
+                                                <td class="text-end py-3">OT Sterilization System</td>
+                                            </tr>
+                                            <tr class="border-bottom">
+                                                <td class="text-muted fw-semibold py-3">Device ID</td>
+                                                <td class="text-end py-3">ESP32_OT_NODE</td>
+                                            </tr>
+                                            <tr class="border-bottom">
+                                                <td class="text-muted fw-semibold py-3">Firmware Version</td>
+                                                <td class="text-end py-3">v1.0.3</td>
+                                            </tr>
+                                            <tr class="border-bottom">
+                                                <td class="text-muted fw-semibold py-3">Backend</td>
+                                                <td class="text-end py-3">Spring Boot 3.5 / SQLite</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted fw-semibold py-3">AI Engine</td>
+                                                <td class="text-end py-3">Python 3 / Flask / Scikit-learn</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <!-- Relay Manual Controls -->
+                                    <h6 class="fw-bold mb-3 mt-4" style="color: var(--text-main);">Manual Relay Control
+                                    </h6>
+                                    <div class="d-flex flex-column gap-3">
+                                        <div
+                                            class="d-flex justify-content-between align-items-center border-bottom pb-3">
+                                            <div>
+                                                <div class="fw-semibold" style="font-size:0.9rem;">UV Lamp</div>
+                                                <div class="text-muted" style="font-size:0.8rem;">Relay 1</div>
+                                            </div>
+                                            <div class="form-check form-switch relay-toggle">
+                                                <input class="form-check-input" type="checkbox" id="relayUV"
+                                                    onchange="toggleRelay('uvlamp', this.checked)">
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="d-flex justify-content-between align-items-center border-bottom pb-3">
+                                            <div>
+                                                <div class="fw-semibold" style="font-size:0.9rem;">Mist Pump</div>
+                                                <div class="text-muted" style="font-size:0.8rem;">Relay 2</div>
+                                            </div>
+                                            <div class="form-check form-switch relay-toggle">
+                                                <input class="form-check-input" type="checkbox" id="relayMist"
+                                                    onchange="toggleRelay('mistpump', this.checked)">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <div class="fw-semibold" style="font-size:0.9rem;">Exhaust Fan</div>
+                                                <div class="text-muted" style="font-size:0.8rem;">Relay 3</div>
+                                            </div>
+                                            <div class="form-check form-switch relay-toggle">
+                                                <input class="form-check-input" type="checkbox" id="relayFan"
+                                                    onchange="toggleRelay('exhaustfan', this.checked)">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ─── SENSORS TAB ─── -->
+                        <div class="tab-pane fade" id="sensors" role="tabpanel">
+                            <h6 class="fw-bold mb-4" style="color: var(--text-main);">Sensor Alert Thresholds</h6>
+                            <p class="text-muted mb-4" style="font-size:0.88rem;">When a sensor reading exceeds these
+                                limits, an alert is triggered and logged in the system.</p>
+                            <form id="sensorsForm">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="p-4 border rounded-3" style="background: var(--card-bg);">
+                                            <h6 class="fw-bold mb-3">🌡️ Temperature</h6>
+                                            <div class="mb-3">
+                                                <label class="form-label">Max Safe Temp (°C)</label>
+                                                <input type="number" class="form-control" id="tempMax" value="35"
+                                                    min="20" max="60">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Min Safe Temp (°C)</label>
+                                                <input type="number" class="form-control" id="tempMin" value="18"
+                                                    min="0" max="30">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-4 border rounded-3" style="background: var(--card-bg);">
+                                            <h6 class="fw-bold mb-3">💧 Humidity</h6>
+                                            <div class="mb-3">
+                                                <label class="form-label">Max Humidity (%)</label>
+                                                <input type="number" class="form-control" id="humMax" value="70"
+                                                    min="30" max="100">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Min Humidity (%)</label>
+                                                <input type="number" class="form-control" id="humMin" value="30" min="0"
+                                                    max="60">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-4 border rounded-3" style="background: var(--card-bg);">
+                                            <h6 class="fw-bold mb-3">🌫️ CO₂</h6>
+                                            <div class="mb-3">
+                                                <label class="form-label">Max CO₂ (ppm) — Triggers extended UV</label>
+                                                <input type="number" class="form-control" id="co2Max" value="1000"
+                                                    min="400" max="5000">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-4 border rounded-3" style="background: var(--card-bg);">
+                                            <h6 class="fw-bold mb-3">🔬 Particulate Matter</h6>
+                                            <div class="mb-3">
+                                                <label class="form-label">Max PM2.5 (μg/m³) — Triggers extended
+                                                    fogging</label>
+                                                <input type="number" class="form-control" id="pm25Max" value="50"
+                                                    min="10" max="500">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Max PM10 (μg/m³)</label>
+                                                <input type="number" class="form-control" id="pm10Max" value="100"
+                                                    min="10" max="1000">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-primary-custom px-4 mt-4"
+                                    onclick="saveSensors()">Save Thresholds</button>
+                            </form>
+                        </div>
+
+                        <!-- ─── NOTIFICATIONS TAB ─── -->
+                        <div class="tab-pane fade" id="notifications" role="tabpanel">
+                            <h6 class="fw-bold mb-4" style="color: var(--text-main);">Notification Settings</h6>
+                            <div class="row g-5">
+                                <div class="col-lg-6">
+                                    <h6 class="fw-semibold mb-3" style="font-size:0.9rem; color:var(--text-muted);">
+                                        WhatsApp / SMS Alerts</h6>
+                                    <form id="notifForm">
+                                        <div class="mb-4">
+                                            <label class="form-label">WhatsApp Phone Number</label>
+                                            <input type="text" class="form-control" id="whatsappPhone"
+                                                placeholder="+91XXXXXXXXXX">
+                                            <div class="form-text">Alerts will be sent to this number via Twilio /
+                                                WhatsApp API.</div>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="form-label">Alert Mode</label>
+                                            <select class="form-select" id="alertMode">
+                                                <option value="all" selected>All Events (Cycle complete + emergencies)
+                                                </option>
+                                                <option value="emergency">Emergencies Only</option>
+                                                <option value="none">Disabled</option>
+                                            </select>
+                                        </div>
+
+                                        <h6 class="fw-semibold mb-3 mt-4"
+                                            style="font-size:0.9rem; color:var(--text-muted);">Trigger Events</h6>
+                                        <div class="d-flex flex-column gap-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span style="font-size:0.9rem;">✅ Sterilization cycle completed</span>
+                                                <div class="form-check form-switch mb-0">
+                                                    <input class="form-check-input" type="checkbox" id="notifComplete"
+                                                        checked>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span style="font-size:0.9rem;">🚨 Emergency / Safety abort</span>
+                                                <div class="form-check form-switch mb-0">
+                                                    <input class="form-check-input" type="checkbox" id="notifEmergency"
+                                                        checked>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span style="font-size:0.9rem;">⚠️ Sensor threshold exceeded</span>
+                                                <div class="form-check form-switch mb-0">
+                                                    <input class="form-check-input" type="checkbox" id="notifThreshold">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span style="font-size:0.9rem;">📶 Device goes offline</span>
+                                                <div class="form-check form-switch mb-0">
+                                                    <input class="form-check-input" type="checkbox" id="notifOffline">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button type="button" class="btn btn-primary-custom px-4 mt-4"
+                                            onclick="saveNotifications()">Save Notification Settings</button>
+                                    </form>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="p-4 border rounded-3"
+                                        style="background: rgba(59,130,246,0.05); border-color: rgba(59,130,246,0.2) !important;">
+                                        <h6 class="fw-bold mb-3">ℹ️ How WhatsApp Alerts Work</h6>
+                                        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.7;">
+                                            This system uses the <strong>Twilio WhatsApp API</strong> to send automated
+                                            alerts.<br><br>
+                                            The backend's <code>NotificationService</code> fires a message whenever:<br>
+                                            • A sterilization cycle is completed (Cycle Complete alert)<br>
+                                            • A safety emergency is triggered (EMERGENCY alert)<br><br>
+                                            To activate, configure your Twilio credentials in
+                                            <code>application.properties</code> and add the recipient phone number
+                                            above.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ─── USERS TAB ─── -->
+                        <div class="tab-pane fade" id="users" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h6 class="fw-bold mb-0" style="color: var(--text-main);">User Management</h6>
+                                <button class="btn btn-sm btn-primary-custom px-3" onclick="loadUsers()">
+                                    <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+                                </button>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table align-middle" style="font-size: 0.88rem;">
+                                    <thead>
+                                        <tr class="border-bottom">
+                                            <th class="text-muted fw-semibold py-3">User</th>
+                                            <th class="text-muted fw-semibold py-3">Role</th>
+                                            <th class="text-muted fw-semibold py-3">Department</th>
+                                            <th class="text-muted fw-semibold py-3">Last Login</th>
+                                            <th class="text-muted fw-semibold py-3">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTableBody">
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted py-5">
+                                                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                                Loading users...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="mt-4 p-3 border rounded-3"
+                                style="background: rgba(245,158,11,0.05); border-color: rgba(245,158,11,0.2) !important;">
+                                <small class="text-muted">
+                                    <strong>🔒 Role Permissions:</strong>
+                                    SUPER_ADMIN — full access including user management &nbsp;|&nbsp;
+                                    ADMIN — start/abort cycles, manage settings &nbsp;|&nbsp;
+                                    TECHNICIAN — monitor sensors, view reports &nbsp;|&nbsp;
+                                    DOCTOR — view reports only
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- ─── SYSTEM TAB ─── -->
+                        <div class="tab-pane fade" id="system" role="tabpanel">
+                            <h6 class="fw-bold mb-4" style="color: var(--text-main);">System Configuration</h6>
+                            <div class="row g-4">
+                                <!-- AI Engine -->
+                                <div class="col-md-6">
+                                    <div class="p-4 border rounded-3" style="background: var(--card-bg);">
+                                        <h6 class="fw-bold mb-3">🤖 AI / ML Engine</h6>
+                                        <p class="text-muted mb-3" style="font-size:0.85rem;">Train the machine learning
+                                            models on the OT Sterilization dataset to enable AI-calculated phase
+                                            durations.</p>
+                                        <div class="mb-3">
+                                            <label class="form-label">AI Engine Status</label>
+                                            <div id="aiStatus" class="d-flex align-items-center gap-2">
+                                                <span class="spinner-border spinner-border-sm text-muted"></span>
+                                                <span class="text-muted" style="font-size:0.85rem;">Checking...</span>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary-custom px-4" onclick="trainAI()">
+                                            <i class="bi bi-cpu me-2"></i>Train AI Models Now
+                                        </button>
+                                        <div id="aiTrainResult" class="mt-3" style="display:none;"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Sterilization Defaults -->
+                                <div class="col-md-6">
+                                    <div class="p-4 border rounded-3" style="background: var(--card-bg);">
+                                        <h6 class="fw-bold mb-3">⚙️ Sterilization Fallback Durations</h6>
+                                        <p class="text-muted mb-3" style="font-size:0.85rem;">Used when AI engine is
+                                            unavailable.</p>
+                                        <div class="mb-3">
+                                            <label class="form-label">UV Phase Duration (seconds)</label>
+                                            <input type="number" class="form-control" id="fallbackUV" value="300"
+                                                min="60" max="3600">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Fogging Phase Duration (seconds)</label>
+                                            <input type="number" class="form-control" id="fallbackFog" value="180"
+                                                min="30" max="1800">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Exhaust Fan Duration (seconds)</label>
+                                            <input type="number" class="form-control" id="fallbackFan" value="120"
+                                                min="30" max="1800">
+                                        </div>
+                                        <button class="btn btn-primary-custom px-4" onclick="saveFallbacks()">Save
+                                            Defaults</button>
+                                    </div>
+                                </div>
+
+                                <!-- Device -->
+                                <div class="col-md-6">
+                                    <div class="p-4 border rounded-3" style="background: var(--card-bg);">
+                                        <h6 class="fw-bold mb-3">📡 Device Connection</h6>
+                                        <div class="mb-3">
+                                            <label class="form-label">ESP32 Device ID</label>
+                                            <input type="text" class="form-control" id="deviceId" value="ESP32_OT_NODE"
+                                                readonly style="opacity:0.7;">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Heartbeat Timeout (seconds)</label>
+                                            <input type="number" class="form-control" id="heartbeatTimeout" value="10"
+                                                min="5" max="60">
+                                            <div class="form-text">Device marked offline if no heartbeat within this
+                                                time.</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Device Online Status</label>
+                                            <div id="deviceStatusBadge" class="mt-1">
+                                                <span class="badge bg-secondary">Checking...</span>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-outline-secondary px-4" onclick="checkDeviceStatus()">
+                                            <i class="bi bi-wifi me-2"></i>Check Now
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Database -->
+                                <div class="col-md-6">
+                                    <div class="p-4 border rounded-3" style="background: var(--card-bg);">
+                                        <h6 class="fw-bold mb-3">🗄️ Database</h6>
+                                        <p class="text-muted mb-3" style="font-size:0.85rem;">SQLite database:
+                                            <code>database/ot.db</code></p>
+                                        <div class="d-flex flex-column gap-3">
+                                            <a href="/api/reports/download?type=csv&range=history"
+                                                class="btn btn-outline-primary px-4">
+                                                <i class="bi bi-download me-2"></i>Export History (CSV)
+                                            </a>
+                                            <a href="/api/reports/download?type=pdf&range=history"
+                                                class="btn btn-outline-danger px-4">
+                                                <i class="bi bi-file-pdf me-2"></i>Export Report (PDF)
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div><!-- /tab-content -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="toast-container save-toast">
+        <div id="saveToast" class="toast align-items-center border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body fw-semibold" id="toastMsg">✅ Settings saved.</div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+    <script>
+        document.getElementById('nav-settings').classList.add('active');
+
+        const TOKEN = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+
+        function showToast(msg, success = true) {
+            const el = document.getElementById('saveToast');
+            el.classList.remove('bg-success', 'bg-danger', 'text-white');
+            el.classList.add(success ? 'bg-success' : 'bg-danger', 'text-white');
+            document.getElementById('toastMsg').textContent = msg;
+            const toast = new bootstrap.Toast(el, { delay: 3000 });
+            toast.show();
+        }
+
+        // ─── GENERAL ───
+        function saveGeneral() {
+            const data = {
+                hospitalName: document.getElementById('hospitalName').value,
+                otRoomName: document.getElementById('otRoomName').value,
+                timezone: document.getElementById('timezone').value,
+                dateFormat: document.getElementById('dateFormat').value,
+                timeFormat: document.getElementById('timeFormat').value,
+            };
+            localStorage.setItem('generalSettings', JSON.stringify(data));
+            showToast('✅ General settings saved locally.');
+        }
+
+        // ─── RELAY TOGGLE ───
+        function toggleRelay(relayType, state) {
+            fetch(`/api/device/ESP32_OT_NODE/command/${relayType}/${state}`, {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + TOKEN }
+            })
+                .then(r => r.json())
+                .then(d => showToast(`✅ ${relayType} turned ${state ? 'ON' : 'OFF'}`))
+                .catch(() => showToast('❌ Failed to send relay command.', false));
+        }
+
+        // ─── SENSORS ───
+        function saveSensors() {
+            const data = {
+                tempMax: document.getElementById('tempMax').value,
+                tempMin: document.getElementById('tempMin').value,
+                humMax: document.getElementById('humMax').value,
+                humMin: document.getElementById('humMin').value,
+                co2Max: document.getElementById('co2Max').value,
+                pm25Max: document.getElementById('pm25Max').value,
+                pm10Max: document.getElementById('pm10Max').value,
+            };
+            localStorage.setItem('sensorThresholds', JSON.stringify(data));
+            showToast('✅ Sensor thresholds saved.');
+        }
+
+        // Load previously saved sensor thresholds
+        (function loadSavedSensors() {
+            const saved = localStorage.getItem('sensorThresholds');
+            if (!saved) return;
+            const d = JSON.parse(saved);
+            for (const [k, v] of Object.entries(d)) {
+                const el = document.getElementById(k);
+                if (el) el.value = v;
+            }
+        })();
+
+        // ─── NOTIFICATIONS ───
+        function saveNotifications() {
+            const data = {
+                phone: document.getElementById('whatsappPhone').value,
+                alertMode: document.getElementById('alertMode').value,
+                notifComplete: document.getElementById('notifComplete').checked,
+                notifEmergency: document.getElementById('notifEmergency').checked,
+                notifThreshold: document.getElementById('notifThreshold').checked,
+                notifOffline: document.getElementById('notifOffline').checked,
+            };
+            localStorage.setItem('notificationSettings', JSON.stringify(data));
+            showToast('✅ Notification settings saved.');
+        }
+
+        (function loadSavedNotifs() {
+            const saved = localStorage.getItem('notificationSettings');
+            if (!saved) return;
+            const d = JSON.parse(saved);
+            if (d.phone) document.getElementById('whatsappPhone').value = d.phone;
+            if (d.alertMode) document.getElementById('alertMode').value = d.alertMode;
+            ['notifComplete', 'notifEmergency', 'notifThreshold', 'notifOffline'].forEach(id => {
+                if (d[id] !== undefined) document.getElementById(id).checked = d[id];
+            });
+        })();
+
+        // ─── USERS ───
+        function loadUsers() {
+            document.getElementById('usersTableBody').innerHTML = `
+                <tr><td colspan="5" class="text-center text-muted py-5">
+                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>Loading users...
+                </td></tr>`;
+
+            fetch('/api/users', { headers: { 'Authorization': 'Bearer ' + TOKEN } })
+                .then(r => {
+                    if (!r.ok) throw new Error('Unauthorized or no /api/users endpoint');
+                    return r.json();
+                })
+                .then(data => {
+                    const users = Array.isArray(data) ? data : (data.data || []);
+                    if (!users.length) {
+                        document.getElementById('usersTableBody').innerHTML =
+                            `<tr><td colspan="5" class="text-center text-muted py-5">No users found.</td></tr>`;
+                        return;
+                    }
+                    document.getElementById('usersTableBody').innerHTML = users.map(u => {
+                        const roleClass = {
+                            SUPER_ADMIN: 'badge-superadmin',
+                            ADMIN: 'badge-admin',
+                            TECHNICIAN: 'badge-technician',
+                            DOCTOR: 'badge-doctor'
+                        }[u.role] || 'badge-admin';
+                        const status = u.active !== false
+                            ? '<span class="badge" style="background:rgba(16,185,129,0.15);color:#10b981;font-size:0.75rem;">Active</span>'
+                            : '<span class="badge" style="background:rgba(239,68,68,0.15);color:#ef4444;font-size:0.75rem;">Disabled</span>';
+                        const lastLogin = u.lastLogin ? new Date(u.lastLogin).toLocaleDateString('en-IN') : '—';
+                        return `<tr class="border-bottom">
+                        <td class="py-3">
+                            <div class="fw-semibold">${u.fullname || u.username}</div>
+                            <div class="text-muted" style="font-size:0.78rem;">@${u.username}</div>
+                        </td>
+                        <td class="py-3"><span class="user-badge ${roleClass}">${(u.role || '').replace('_', ' ')}</span></td>
+                        <td class="py-3 text-muted">${u.department || '—'}</td>
+                        <td class="py-3 text-muted">${lastLogin}</td>
+                        <td class="py-3">${status}</td>
+                    </tr>`;
+                    }).join('');
+                })
+                .catch(err => {
+                    // Fallback: show the known seeded users
+                    document.getElementById('usersTableBody').innerHTML = `
+                    <tr class="border-bottom">
+                        <td class="py-3"><div class="fw-semibold">Super Admin</div><div class="text-muted" style="font-size:0.78rem;">@superadmin</div></td>
+                        <td><span class="user-badge badge-superadmin">SUPER ADMIN</span></td>
+                        <td class="text-muted">IT Administration</td>
+                        <td class="text-muted">—</td>
+                        <td><span class="badge" style="background:rgba(16,185,129,0.15);color:#10b981;font-size:0.75rem;">Active</span></td>
+                    </tr>
+                    <tr class="border-bottom">
+                        <td class="py-3"><div class="fw-semibold">Admin</div><div class="text-muted" style="font-size:0.78rem;">@admin</div></td>
+                        <td><span class="user-badge badge-admin">ADMIN</span></td>
+                        <td class="text-muted">Hospital Administration</td>
+                        <td class="text-muted">—</td>
+                        <td><span class="badge" style="background:rgba(16,185,129,0.15);color:#10b981;font-size:0.75rem;">Active</span></td>
+                    </tr>
+                    <tr class="border-bottom">
+                        <td class="py-3"><div class="fw-semibold">Technician</div><div class="text-muted" style="font-size:0.78rem;">@technician</div></td>
+                        <td><span class="user-badge badge-technician">TECHNICIAN</span></td>
+                        <td class="text-muted">Biomedical Engineering</td>
+                        <td class="text-muted">—</td>
+                        <td><span class="badge" style="background:rgba(16,185,129,0.15);color:#10b981;font-size:0.75rem;">Active</span></td>
+                    </tr>
+                    <tr>
+                        <td class="py-3"><div class="fw-semibold">Doctor</div><div class="text-muted" style="font-size:0.78rem;">@doctor</div></td>
+                        <td><span class="user-badge badge-doctor">DOCTOR</span></td>
+                        <td class="text-muted">Surgery</td>
+                        <td class="text-muted">—</td>
+                        <td><span class="badge" style="background:rgba(16,185,129,0.15);color:#10b981;font-size:0.75rem;">Active</span></td>
+                    </tr>`;
+                });
+        }
+
+        // ─── SYSTEM ───
+        function checkDeviceStatus() {
+            const badge = document.getElementById('deviceStatusBadge');
+            badge.innerHTML = '<span class="badge bg-secondary">Checking...</span>';
+            fetch('/api/sensors/latest', { headers: { 'Authorization': 'Bearer ' + TOKEN } })
+                .then(r => r.json())
+                .then(d => {
+                    const online = d.data && d.data.deviceOnline;
+                    badge.innerHTML = online
+                        ? '<span class="badge" style="background:rgba(16,185,129,0.15);color:#10b981;">🟢 ONLINE</span>'
+                        : '<span class="badge" style="background:rgba(239,68,68,0.15);color:#ef4444;">🔴 OFFLINE</span>';
+                })
+                .catch(() => badge.innerHTML = '<span class="badge bg-danger text-white">Error</span>');
+        }
+
+        function trainAI() {
+            const result = document.getElementById('aiTrainResult');
+            result.style.display = 'block';
+            result.innerHTML = '<div class="text-muted" style="font-size:0.85rem;"><span class="spinner-border spinner-border-sm me-2"></span>Training AI models...</div>';
+            fetch('http://localhost:5000/api/ai/train', { method: 'POST' })
+                .then(r => r.json())
+                .then(d => {
+                    result.innerHTML = d.success
+                        ? `<div class="text-success" style="font-size:0.85rem;">✅ ${d.message}</div>`
+                        : `<div class="text-danger" style="font-size:0.85rem;">❌ ${d.message}</div>`;
+                })
+                .catch(() => result.innerHTML = '<div class="text-danger" style="font-size:0.85rem;">❌ AI engine offline (port 5000).</div>');
+        }
+
+        function checkAiStatus() {
+            const el = document.getElementById('aiStatus');
+            fetch('http://localhost:5000/api/ai/predict')
+                .then(r => {
+                    el.innerHTML = r.ok
+                        ? '<span class="badge" style="background:rgba(16,185,129,0.15);color:#10b981;">🟢 AI Engine Online</span>'
+                        : '<span class="badge" style="background:rgba(239,68,68,0.15);color:#ef4444;">🔴 AI Engine Error</span>';
+                })
+                .catch(() => el.innerHTML = '<span class="badge" style="background:rgba(239,68,68,0.15);color:#ef4444;">🔴 AI Engine Offline</span>');
+        }
+
+        function saveFallbacks() {
+            const data = {
+                fallbackUV: document.getElementById('fallbackUV').value,
+                fallbackFog: document.getElementById('fallbackFog').value,
+                fallbackFan: document.getElementById('fallbackFan').value,
+            };
+            localStorage.setItem('fallbackDurations', JSON.stringify(data));
+            showToast('✅ Fallback durations saved.');
+        }
+
+        (function loadSavedFallbacks() {
+            const saved = localStorage.getItem('fallbackDurations');
+            if (!saved) return;
+            const d = JSON.parse(saved);
+            for (const [k, v] of Object.entries(d)) {
+                const el = document.getElementById(k);
+                if (el) el.value = v;
+            }
+        })();
+
+        // ─── AUTO-LOAD on tab switch ───
+        document.getElementById('settingsTab').addEventListener('shown.bs.tab', function (e) {
+            const target = e.target.getAttribute('data-bs-target');
+            if (target === '#users') loadUsers();
+            if (target === '#system') { checkDeviceStatus(); checkAiStatus(); }
+        });
+    </script>
+</body>
+
+</html>

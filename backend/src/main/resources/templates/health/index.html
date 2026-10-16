@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+
+<head>
+    <title>System Health - OT Sterilization System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row flex-nowrap m-0 p-0">
+            <div id="sidebar-col" class="p-0">
+                <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            </div>
+            <div id="main-col" class="p-0">
+                <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+                <div class="container mt-4 mb-2">
+                    <h3 class="text-white fw-bold"><i class="bi bi-heart-pulse-fill text-primary me-2"></i> System
+                        Health</h3>
+                </div>
+
+                <div th:replace="~{fragments/ai-panel :: aiPanel}"></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/dashboard.js}"></script>
+    <script th:src="@{/js/relay.js}"></script>
+</body>
+
+</html>

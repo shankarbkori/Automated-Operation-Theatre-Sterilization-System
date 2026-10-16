@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login - OT Sterilization System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <style>
+        .split-bg {
+            background-color: var(--sidebar-bg);
+            height: 100vh;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .split-bg::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, rgba(5, 31, 24, 0) 0%, rgba(5, 31, 24, 0.9) 100%),
+                url('https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        .split-bg-content {
+            z-index: 1;
+        }
+
+        .login-panel {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 10%;
+        }
+
+        .form-control {
+            padding: 12px;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Hide native Edge/IE password reveal eye */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="row g-0">
+        <!-- Left Side -->
+        <div class="col-md-6 d-none d-md-block split-bg">
+            <div class="split-bg-content">
+                <div class="d-inline-flex justify-content-center align-items-center bg-primary rounded shadow mb-4"
+                    style="width: 80px; height: 80px;">
+                    <i class="bi bi-shield-plus text-white fs-1"></i>
+                </div>
+                <h1 class="fw-bold mb-3">Automatic Operation Theatre<br>Sterilization System</h1>
+                <p class="text-white-50 fs-5 mb-0">Smart - Safe - Automated</p>
+                <div class="mt-5 text-white-50" style="font-size: 0.8rem;">
+                    &copy; 2026 OT Sterilization System
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side -->
+        <div class="col-md-6 col-12 login-panel bg-white">
+            <div class="mx-auto" style="max-width: 400px; width: 100%;">
+                <h2 class="fw-bold mb-1 text-center" style="color: var(--text-main);">Welcome Back!</h2>
+                <p class="text-muted text-center mb-5">Login to access your dashboard</p>
+
+                <div id="login-error" class="alert alert-danger d-none" role="alert" style="font-size: 0.9rem;"></div>
+
+                <form id="loginForm">
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-dark">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0 text-muted"><i
+                                    class="bi bi-person"></i></span>
+                            <input type="text" id="username" class="form-control border-start-0 ps-0"
+                                placeholder="Enter username" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-dark">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0 text-muted"><i
+                                    class="bi bi-lock"></i></span>
+                            <input type="password" id="password" class="form-control border-start-0 ps-0 border-end-0"
+                                placeholder="Enter password" required>
+                            <span class="input-group-text bg-transparent border-start-0 text-muted"
+                                style="cursor:pointer;" id="togglePassword"><i class="bi bi-eye"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="remember" checked>
+                            <label class="form-check-label text-muted" for="remember">Remember me</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="loginBtn" class="btn btn-primary-custom w-100 py-3 mb-4">
+                        <span id="loginText">Login</span>
+                        <div class="spinner-border spinner-border-sm text-light d-none" id="loginSpinner" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </button>
+
+                    <div class="text-center text-muted d-block d-md-none" style="font-size: 0.8rem;">
+                        &copy; 2026 OT Sterilization System
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Password Visibility Toggle
+        document.getElementById('togglePassword').addEventListener('click', function (e) {
+            const passwordNode = document.getElementById('password');
+            const icon = this.querySelector('i');
+            if (passwordNode.type === 'password') {
+                passwordNode.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                passwordNode.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+
+        // Form Submit
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('loginBtn');
+            const spn = document.getElementById('loginSpinner');
+            const txt = document.getElementById('loginText');
+            const errBox = document.getElementById('login-error');
+
+            // UI Loading state
+            btn.disabled = true;
+            txt.classList.add('d-none');
+            spn.classList.remove('d-none');
+            errBox.classList.add('d-none');
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: document.getElementById('username').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Set short lived JWT cookie manually mapping to the required Authorization state
+                    // 8 hours approx mapped to max-age
+                    document.cookie = `jwt=${data.token}; path=/; max-age=28800; samesite=strict`;
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('role', data.role);
+                    localStorage.setItem('fullname', data.fullname);
+                    localStorage.setItem('username', data.username);
+
+                    window.location.href = '/dashboard';
+                } else {
+                    errBox.textContent = data.message || "Invalid Username or Password";
+                    errBox.classList.remove('d-none');
+                }
+            } catch (err) {
+                errBox.textContent = "Server communication failure.";
+                errBox.classList.remove('d-none');
+            } finally {
+                btn.disabled = false;
+                txt.classList.remove('d-none');
+                spn.classList.add('d-none');
+            }
+        });
+    </script>
+    </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,48 @@
+<div th:fragment="deviceStatus">
+
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-header border-success text-white d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-motherboard me-2"></i>Device Status & Hardware Overrides</span>
+                <span id="espStatus" class="badge bg-success">ONLINE</span>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <h6>Main Power Relay</h6>
+                        <span id="relayStatusBadge" class="badge bg-secondary mb-2">OFF</span>
+                        <div class="form-check form-switch d-flex justify-content-center">
+                            <input class="form-check-input" type="checkbox" id="toggleRelay"
+                                onchange="toggleDevice('relay', this.checked)">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>UV Lamp Array</h6>
+                        <span id="uvStatusBadge" class="badge bg-secondary mb-2">OFF</span>
+                        <div class="form-check form-switch d-flex justify-content-center">
+                            <input class="form-check-input" type="checkbox" id="toggleUv"
+                                onchange="toggleDevice('uvLamp', this.checked)">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>Mist Pump / Fogger</h6>
+                        <span id="mistStatusBadge" class="badge bg-secondary mb-2">OFF</span>
+                        <div class="form-check form-switch d-flex justify-content-center">
+                            <input class="form-check-input" type="checkbox" id="toggleMist"
+                                onchange="toggleDevice('mistPump', this.checked)">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>Exhaust Fan</h6>
+                        <span id="fanStatusBadge" class="badge bg-secondary mb-2">OFF</span>
+                        <div class="form-check form-switch d-flex justify-content-center">
+                            <input class="form-check-input" type="checkbox" id="toggleFan"
+                                onchange="toggleDevice('exhaustFan', this.checked)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

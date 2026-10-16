@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Reports')}"></head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Navbar -->
+            <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Reports</h2>
+                    <p class="text-muted mb-0" style="font-size: 0.9rem;">Generate and download system reports</p>
+                </div>
+            </div>
+
+            <div class="content-wrapper">
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="custom-card mb-0 d-flex align-items-center">
+                            <div class="bg-light text-primary rounded-circle d-flex justify-content-center align-items-center me-3"
+                                style="width: 48px; height: 48px;"><i class="bi bi-graph-up fs-4"></i></div>
+                            <div>
+                                <small class="text-muted fw-semibold">Total Cycles</small>
+                                <div class="fs-4 fw-bold" id="rep-total">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="custom-card mb-0 d-flex align-items-center">
+                            <div class="bg-light text-success rounded-circle d-flex justify-content-center align-items-center me-3"
+                                style="width: 48px; height: 48px;"><i class="bi bi-check-circle fs-4"></i></div>
+                            <div>
+                                <small class="text-muted fw-semibold">Successful Cycles</small>
+                                <div class="fs-4 fw-bold text-success" id="rep-success">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="custom-card mb-0 d-flex align-items-center">
+                            <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex justify-content-center align-items-center me-3"
+                                style="width: 48px; height: 48px;"><i class="bi bi-x-octagon fs-4"></i></div>
+                            <div>
+                                <small class="text-muted fw-semibold">Failed Cycles</small>
+                                <div class="fs-4 fw-bold text-danger" id="rep-failed">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="custom-card mb-0 d-flex align-items-center">
+                            <div class="bg-light text-muted rounded-circle d-flex justify-content-center align-items-center me-3"
+                                style="width: 48px; height: 48px;"><i class="bi bi-clock-history fs-4"></i></div>
+                            <div>
+                                <small class="text-muted fw-semibold">Avg. Duration</small>
+                                <div class="fs-4 fw-bold" id="rep-duration">-- min</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="custom-card">
+                    <div class="row align-items-end mb-5">
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-semibold" style="font-size: 0.85rem;">Report
+                                Type</label>
+                            <select id="reportTypeSelect" class="form-select bg-light border"
+                                style="padding: 10px 16px;">
+                                <option value="daily">Daily Report</option>
+                                <option value="weekly">Weekly Report</option>
+                                <option value="monthly">Monthly Report</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-semibold" style="font-size: 0.85rem;">Select
+                                Date</label>
+                            <input type="date" class="form-control bg-light border" style="padding: 10px 16px;"
+                                value="2025-05-07">
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button id="btnGenerateReport" class="btn btn-primary-custom" style="padding: 10px 24px;"><i
+                                    class="bi bi-file-earmark-bar-graph me-2"></i>Generate Report</button>
+                        </div>
+                    </div>
+
+                    <div class="border rounded px-4 py-4 mt-3" style="background-color: #f8fafc;">
+                        <h6 class="fw-bold mb-4" style="color: var(--text-main);">Report Summary (07 May 2025)</h6>
+
+                        <div class="row g-4">
+                            <div class="col-md-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <i class="bi bi-hdd-stack text-muted fs-3"></i>
+                                    <div>
+                                        <div class="text-muted fw-semibold" style="font-size: 0.85rem;">Total Cycles
+                                        </div>
+                                        <div class="fs-4 fw-bold" id="rep-total-sub">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <i class="bi bi-check-circle text-success fs-3"></i>
+                                    <div>
+                                        <div class="text-muted fw-semibold" style="font-size: 0.85rem;">Successful</div>
+                                        <div class="fs-4 fw-bold text-success" id="rep-success-sub">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <i class="bi bi-x-circle text-danger fs-3"></i>
+                                    <div>
+                                        <div class="text-muted fw-semibold" style="font-size: 0.85rem;">Failed</div>
+                                        <div class="fs-4 fw-bold text-danger" id="rep-failed-sub">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <i class="bi bi-stopwatch text-muted fs-3"></i>
+                                    <div>
+                                        <div class="text-muted fw-semibold" style="font-size: 0.85rem;">Total Duration
+                                        </div>
+                                        <div class="fs-4 fw-bold" id="rep-duration-sub">--</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+    <script>
+        document.getElementById('nav-reports').classList.add('active');
+
+        document.getElementById('btnGenerateReport').addEventListener('click', () => {
+            const range = document.getElementById('reportTypeSelect').value;
+            window.location.href = `/api/reports/download?type=pdf&range=${range}`;
+        });
+
+        async function fetchReportStats() {
+            try {
+                const response = await fetch('/api/reports/stats');
+                if (!response.ok) return;
+                const stats = await response.json();
+
+                document.getElementById('rep-total').innerText = stats.totalCycles;
+                document.getElementById('rep-success').innerText = stats.successfulCycles;
+                document.getElementById('rep-failed').innerText = stats.failedCycles;
+                document.getElementById('rep-duration').innerText = stats.averageDuration;
+
+                document.getElementById('rep-total-sub').innerText = stats.totalCycles;
+                document.getElementById('rep-success-sub').innerText = stats.successfulCycles;
+                document.getElementById('rep-failed-sub').innerText = stats.failedCycles;
+                document.getElementById('rep-duration-sub').innerText = stats.averageDuration;
+            } catch (e) {
+                console.error("Failed to map stats");
+            }
+        }
+
+        fetchReportStats();
+    </script>
+</body>
+
+</html>

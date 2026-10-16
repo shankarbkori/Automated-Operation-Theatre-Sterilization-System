@@ -1,0 +1,46 @@
+# Overview
+We are building a production-ready **AI-Based Automated OT Sterilization System**. This roadmap will guide our structured engineering processes to deliver high-quality, professional, and stable software. We will integrate a Spring Boot backend, a real-time web dashboard using Thymeleaf, embedded systems via Raspberry Pi for real-world interactions, and an ML layer for intelligent anomaly detection and automation.
+
+## Proposed Changes
+
+### Phase 1: Foundation
+- Inspect existing REST APIs, services, and architectures.
+- Resolve any initial compilation, execution, or routing issues (like template rendering errors).
+- Clean up the directory structure. Remove unused mock or prototype code.
+
+### Phase 2: Core Backend
+- Solidify REST API endpoints for sensor ingestion, sterilization cycles, and system logs.
+- Refactor Controller -> Service -> Repository layers following SOLID principles.
+- Configure SQLite schemas using JPA entities appropriately.
+- Add robust validation and exception handling.
+
+### Phase 3: Professional Frontend
+- Update Thymeleaf templates ([index.html](file:///d:/Automated-OT-Sterilization-System/backend/target/classes/templates/index.html), `dashboard.html`).
+- Enhance the UI using modern, hospital-style, dark-themed CSS and Bootstrap.
+- Build reusable UI fragments ([ai-panel.html](file:///d:/Automated-OT-Sterilization-System/backend/src/main/resources/templates/fragments/ai-panel.html), [chart.html](file:///d:/Automated-OT-Sterilization-System/backend/src/main/resources/templates/fragments/chart.html), [logs.html](file:///d:/Automated-OT-Sterilization-System/backend/src/main/resources/templates/fragments/logs.html), [sterilization.html](file:///d:/Automated-OT-Sterilization-System/backend/src/main/resources/templates/fragments/sterilization.html)).
+- Implement live charts using polling or WebSockets.
+
+### Phase 4: Hardware Integration (Firmware & Scripts)
+- Define standard Python-based Raspberry Pi GPIO scripts (`firmware/`, `scripts/`).
+- Create interface code for sensors (Temperature, Humidity, Gas, Motion) and Relay control.
+- Ensure embedded scripts communicate smoothly with the backend REST endpoints.
+
+### Phase 5: AI Layer
+- Engineer data collection pipelines from sensors.
+- Train and deploy time-series anomaly detection algorithms (e.g., Isolation Forest using scikit-learn).
+- Build the `ai` module for anomaly notifications and system recommendations.
+
+### Phase 6: Production Readiness
+- Implement comprehensive unit and integration tests.
+- Setup Authentication.
+- Prepare Analytics, Logging, and PDF/Excel Reports.
+- Finalize documentation and architecture diagrams.
+
+## Verification Plan
+### Automated Tests
+- We will execute `mvn clean test` for validation of the core backend layers (Service, Controller, Repository).
+- Python unit testing for ML integration using `pytest` inside the `ai` folder.
+
+### Manual Verification
+- The Spring Boot application (`mvn spring-boot:run`) will be tested via browser on port 8081.
+- Physical integration tests on the Raspberry Pi mimicking sensor inputs.

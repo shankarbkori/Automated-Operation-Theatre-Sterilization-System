@@ -1,0 +1,106 @@
+<div th:fragment="sensorCards">
+    <div class="container mt-4">
+        <!-- System Alerts & Safety Summary Banner -->
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div
+                    class="card bg-dark border-secondary p-3 d-flex flex-row justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase">Operational environment rating</span>
+                        <h4 class="mb-0 text-white">Indoor Air Quality: <span id="airQualityLabel"
+                                class="badge bg-success text-uppercase">Good</span></h4>
+                    </div>
+                    <div class="text-end">
+                        <span class="text-muted small text-uppercase font-monospace">OT Safety Checks</span>
+                        <div class="d-flex gap-2 justify-content-end mt-1">
+                            <span id="motionBadge" class="badge bg-success"><i
+                                    class="bi bi-person-fill-slash me-1"></i>No Motion</span>
+                            <span id="doorBadge" class="badge bg-success"><i
+                                    class="bi bi-door-closed-fill me-1"></i>Door Closed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Environmental & Safety parameters -->
+        <div class="row g-3 mb-3">
+            <div class="col-md-3">
+                <div class="card shadow text-center">
+                    <div class="card-body">
+                        <h5>🌡 Temperature</h5>
+                        <h2 id="temperature">-- °C</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow text-center">
+                    <div class="card-body">
+                        <h5>💧 Humidity</h5>
+                        <h2 id="humidity">-- %</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow text-center">
+                    <div class="card-body">
+                        <h5>💡 Light Intensity</h5>
+                        <h2 id="light" class="text-warning">-- Lux</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow text-center">
+                    <div class="card-body">
+                        <h5>🚪 Door Status</h5>
+                        <h2 id="doorStatus">--</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed IAQ chemical parameters -->
+        <div class="row g-3">
+            <div class="col">
+                <div class="card shadow text-center">
+                    <div class="card-body py-3">
+                        <h6 class="text-muted small mb-1">CO₂ Level</h6>
+                        <h4 id="co2" class="text-primary font-monospace">-- ppm</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card shadow text-center">
+                    <div class="card-body py-3">
+                        <h6 class="text-muted small mb-1">TVOC level</h6>
+                        <h4 id="tvoc" class="text-info font-monospace">-- ppb</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card shadow text-center">
+                    <div class="card-body py-3">
+                        <h6 class="text-muted small mb-1">PM2.5</h6>
+                        <h4 id="pm25" class="text-success font-monospace">-- µg/m³</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card shadow text-center">
+                    <div class="card-body py-3">
+                        <h6 class="text-muted small mb-1">PM10</h6>
+                        <h4 id="pm10" class="text-teal font-monospace">-- µg/m³</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card shadow text-center">
+                    <div class="card-body py-3">
+                        <h6 class="text-muted small mb-1">CO Level</h6>
+                        <h4 id="co" class="text-danger font-monospace">-- ppm</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+
+# Java / Spring Boot
+target/
+build/
+.gradle/
+*.class
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Secrets and local configuration
+application-local.properties
+application-local.yml
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# OS files
+.DS_Store
+Thumbs.db
+
+
+# Generated logs and temporary output
+/backend/*.log
+/backend/boot_error.txt
+/backend/build.txt
+/backend/compile_error.txt
+/backend/compile_error_utf8.txt
+/backend/compile_out.txt
+/backend/logs.txt
+/backend/dump_users.py
+/backend/startup_error.txt
+/backend/startup_error_utf8.txt
+/temp_output.html
+

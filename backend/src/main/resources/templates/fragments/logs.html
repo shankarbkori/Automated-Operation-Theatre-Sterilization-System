@@ -1,0 +1,27 @@
+<div th:fragment="logsSection">
+    <div class="container mt-4 mb-5">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white border-bottom border-light">
+                <i class="bi bi-list-columns-reverse me-2"></i>System Event Logs
+            </div>
+            <div class="card-body p-0" style="max-height: 250px; overflow-y: auto;">
+                <table class="table table-dark table-hover mb-0" style="font-size: 0.9rem;">
+                    <thead style="position: sticky; top: 0; z-index: 1;">
+                        <tr>
+                            <th scope="col">Time</th>
+                            <th scope="col">Module</th>
+                            <th scope="col">Level</th>
+                            <th scope="col">Message</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logsTableBody">
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-3">Waiting for logs...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script th:src="@{/js/ai.js}"></script>
+</div>

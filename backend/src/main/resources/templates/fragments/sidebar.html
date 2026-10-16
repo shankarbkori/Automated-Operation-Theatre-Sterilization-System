@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="sidebar" class="sidebar">
+    <a href="/dashboard" class="brand-logo">
+        <div class="d-flex align-items-center justify-content-center bg-primary rounded shadow-sm"
+            style="width:32px; height:32px;">
+            <i class="bi bi-shield-plus text-white"></i>
+        </div>
+        <div>
+            <div style="font-size: 0.9rem; line-height:1.2;">OT Sterilization</div>
+            <div style="font-size: 0.9rem; line-height:1.2;">System</div>
+        </div>
+    </a>
+
+    <div style="font-size: 0.75rem; color: #475569; padding: 16px 24px; text-transform: uppercase; font-weight: 600;">
+        Main Menu</div>
+
+    <ul class="sidebar-nav">
+        <li>
+            <a th:href="@{/dashboard}" class="sidebar-link" id="nav-dashboard">
+                <i class="bi bi-grid-1x2-fill"></i> Dashboard
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/live-monitoring}" class="sidebar-link" id="nav-live-monitoring">
+                <i class="bi bi-activity"></i> Live Monitoring
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/sterilization-control}" class="sidebar-link" id="nav-sterilization">
+                <i class="bi bi-play-circle-fill"></i> Sterilization Control
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/history}" class="sidebar-link" id="nav-history">
+                <i class="bi bi-clock-history"></i> History & Logs
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/reports}" class="sidebar-link" id="nav-reports">
+                <i class="bi bi-file-earmark-bar-graph-fill"></i> Reports
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/ai-insights}" class="sidebar-link" id="nav-ai">
+                <i class="bi bi-cpu-fill"></i> AI Insights
+            </a>
+        </li>
+        <li>
+            <a th:href="@{/settings}" class="sidebar-link" id="nav-settings">
+                <i class="bi bi-gear-fill"></i> Settings
+            </a>
+        </li>
+    </ul>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const role = localStorage.getItem('role') || 'VIEWER';
+
+            // Map IDs of all restricted nav items
+            const navControl = document.getElementById('nav-sterilization');
+            const navHistory = document.getElementById('nav-history');
+            const navReports = document.getElementById('nav-reports');
+            const navAi = document.getElementById('nav-ai');
+            const navSettings = document.getElementById('nav-settings');
+
+            // Default Deny Strategy: Hide all restricted elements
+            const restricted = [navControl, navHistory, navReports, navAi, navSettings];
+            restricted.forEach(el => { if (el) el.parentElement.style.display = 'none'; });
+
+            // Apply Role-Based Access Control logic
+            if (role === 'SUPER_ADMIN') {
+                restricted.forEach(el => { if (el) el.parentElement.style.display = 'block'; });
+            }
+            else if (role === 'ADMIN') {
+                [navControl, navHistory, navReports, navAi, navSettings].forEach(el => { if (el) el.parentElement.style.display = 'block'; });
+            }
+            else if (role === 'DOCTOR') {
+                [navReports, navAi].forEach(el => { if (el) el.parentElement.style.display = 'block'; });
+            }
+            else if (role === 'TECHNICIAN') {
+                [navControl].forEach(el => { if (el) el.parentElement.style.display = 'block'; });
+            }
+        });
+    </script>
+</div>
+
+</html>

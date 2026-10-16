@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Dashboard')}"></head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Navbar -->
+            <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Dashboard</h2>
+                </div>
+                <div>
+                    <button id="btnDashExport" class="btn btn-outline-custom"><i
+                            class="bi bi-download me-2"></i>Export</button>
+                    <button id="btnDashQuickStart" class="btn btn-primary-custom ms-2"><i
+                            class="bi bi-play-fill me-2"></i>Quick Start</button>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="content-wrapper">
+
+                <!-- Top Status Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="custom-card h-100 d-flex align-items-center mb-0 p-3">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle bg-light me-3"
+                                style="width: 48px; height: 48px; color: var(--success);">
+                                <i class="bi bi-shield-check fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted fw-semibold">OT Status</small>
+                                <div class="fw-bold fs-5 text-muted" id="dash-ot-status">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="custom-card h-100 d-flex align-items-center mb-0 p-3">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle bg-light me-3"
+                                style="width: 48px; height: 48px; color: var(--success);">
+                                <i class="bi bi-door-closed-fill fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted fw-semibold">Door Status</small>
+                                <div class="fw-bold fs-5 text-muted" id="dash-door-status">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="custom-card h-100 d-flex align-items-center mb-0 p-3">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle bg-light me-3"
+                                style="width: 48px; height: 48px; color: var(--info);">
+                                <i class="bi bi-gear-wide-connected fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted fw-semibold">Sterilization Status</small>
+                                <div class="fw-bold fs-5 text-muted" id="dash-steril-status">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="custom-card h-100 d-flex align-items-center mb-0 p-3">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle bg-light me-3"
+                                style="width: 48px; height: 48px; color: var(--success);">
+                                <i class="bi bi-wind fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted fw-semibold">Air Quality</small>
+                                <div class="fw-bold fs-5 text-muted" id="dash-aqi-status">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Left Column (Sensors + Controls) -->
+                    <div class="col-lg-8">
+                        <div class="custom-card">
+                            <div class="card-title-sm">Live Sensor Data</div>
+                            <div class="row g-3">
+                                <div class="col-md-3 col-6">
+                                    <div class="p-2 border rounded">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <small class="text-muted"><i
+                                                    class="bi bi-thermometer-half text-primary me-1"></i>
+                                                Temperature</small>
+                                        </div>
+                                        <div class="fs-4 fw-bold"><span id="dash-temp">--</span> <span
+                                                class="fs-6 text-muted">°C</span></div>
+                                        <div class="mt-2 text-center" style="height: 30px;"><canvas
+                                                id="sparkTemp"></canvas></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="p-2 border rounded">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <small class="text-muted"><i class="bi bi-droplet-half text-info me-1"></i>
+                                                Humidity</small>
+                                        </div>
+                                        <div class="fs-4 fw-bold"><span id="dash-hum">--</span> <span
+                                                class="fs-6 text-muted">%</span></div>
+                                        <div class="mt-2 text-center" style="height: 30px;"><canvas
+                                                id="sparkHum"></canvas></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="p-2 border rounded">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <small class="text-muted"><i class="bi bi-clouds text-warning me-1"></i> Air
+                                                Quality</small>
+                                        </div>
+                                        <div class="fs-4 fw-bold"><span id="dash-aqi">--</span> <span
+                                                class="fs-6 text-muted">PPM</span></div>
+                                        <div class="mt-2 text-center" style="height: 30px;"><canvas
+                                                id="sparkAqi"></canvas></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="p-2 border rounded">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <small class="text-muted"><i
+                                                    class="bi bi-brightness-high text-warning me-1"></i> Light
+                                                (LDR)</small>
+                                        </div>
+                                        <div class="fs-4 fw-bold"><span id="dash-lux">--</span> <span
+                                                class="fs-6 text-muted">Lux</span></div>
+                                        <div class="mt-2 text-center" style="height: 30px;"><canvas
+                                                id="sparkLux"></canvas></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="custom-card">
+                            <div class="card-title-sm">Sterilization Control Panel</div>
+                            <div
+                                class="d-flex justify-content-between align-items-center px-4 py-4 mb-4 border rounded bg-light">
+                                <div class="text-center">
+                                    <div class="rounded-circle bg-white shadow-sm d-flex justify-content-center align-items-center mx-auto mb-2"
+                                        style="width:50px; height:50px; border: 2px solid var(--border-color);">
+                                        <i class="bi bi-sun text-muted fs-4" id="icon-uv"></i>
+                                    </div>
+                                    <div class="fw-semibold" style="font-size: 0.85rem;">UV-C Lamp</div>
+                                </div>
+                                <i class="bi bi-arrow-right text-muted fs-4"></i>
+                                <div class="text-center">
+                                    <div class="rounded-circle bg-white shadow-sm d-flex justify-content-center align-items-center mx-auto mb-2"
+                                        style="width:50px; height:50px; border: 2px solid var(--border-color);">
+                                        <i class="bi bi-cloud-fog2 text-muted fs-4" id="icon-fog"></i>
+                                    </div>
+                                    <div class="fw-semibold" style="font-size: 0.85rem;">Fogging</div>
+                                </div>
+                                <i class="bi bi-arrow-right text-muted fs-4"></i>
+                                <div class="text-center">
+                                    <div class="rounded-circle bg-white shadow-sm d-flex justify-content-center align-items-center mx-auto mb-2"
+                                        style="width:50px; height:50px; border: 2px solid var(--border-color);">
+                                        <i class="bi bi-fan text-muted fs-4" id="icon-fan"></i>
+                                    </div>
+                                    <div class="fw-semibold" style="font-size: 0.85rem;">Air Purification</div>
+                                </div>
+                                <i class="bi bi-arrow-right text-muted fs-4"></i>
+                                <div class="text-center">
+                                    <div class="rounded-circle bg-white shadow-sm d-flex justify-content-center align-items-center mx-auto mb-2"
+                                        style="width:50px; height:50px; border: 2px solid var(--border-color);">
+                                        <i class="bi bi-shield-check text-muted fs-4" id="icon-verify"></i>
+                                    </div>
+                                    <div class="fw-semibold" style="font-size: 0.85rem;">Verification</div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-3">
+                                <button id="btnDashStart" class="btn btn-primary-custom flex-grow-1 py-3"><i
+                                        class="bi bi-play-fill me-2 fs-5"></i> START STERILIZATION</button>
+                                <button id="btnResetSystem" class="btn btn-outline-custom flex-grow-1 py-3 bg-light"><i
+                                        class="bi bi-arrow-clockwise me-2"></i> RESET SYSTEM</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column (Overview) -->
+                    <div class="col-lg-4">
+                        <div class="custom-card h-100">
+                            <div class="card-title-sm">System Overview</div>
+                            <div class="d-flex justify-content-center align-items-center py-4 mb-4"
+                                style="height: 180px;">
+                                <!-- CSS Circular Progress - updated dynamically -->
+                                <div class="position-relative d-flex justify-content-center align-items-center"
+                                    id="health-ring"
+                                    style="width: 140px; height: 140px; border-radius: 50%; background: conic-gradient(#e2e8f0 100%, transparent 0);">
+                                    <div class="position-absolute bg-white rounded-circle d-flex flex-column justify-content-center align-items-center"
+                                        style="width: 110px; height: 110px;">
+                                        <div class="fs-2 fw-bold text-muted" id="health-pct">--</div>
+                                        <small class="text-muted text-center" style="font-size: 0.65rem;"
+                                            id="health-label">Waiting<br>for device</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <ul class="list-group list-group-flush" style="font-size: 0.85rem;" id="sensor-health-list">
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                                    <span class="text-muted"><i class="bi bi-record-circle me-2 text-muted"></i>PIR
+                                        Sensor</span>
+                                    <span id="hw-pir" class="text-muted fw-semibold">--</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                                    <span class="text-muted"><i class="bi bi-thermometer-half me-2 text-muted"></i>DHT22
+                                        Sensor</span>
+                                    <span id="hw-dht" class="text-muted fw-semibold">--</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                                    <span class="text-muted"><i class="bi bi-cloud me-2 text-muted"></i>MQ135
+                                        Sensor</span>
+                                    <span id="hw-mq" class="text-muted fw-semibold">--</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                                    <span class="text-muted"><i class="bi bi-brightness-high me-2 text-muted"></i>LDR
+                                        Sensor</span>
+                                    <span id="hw-ldr" class="text-muted fw-semibold">--</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                                    <span class="text-muted"><i class="bi bi-cpu me-2 text-muted"></i>Relay
+                                        Module</span>
+                                    <span id="hw-relay" class="text-muted fw-semibold">--</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                                    <span class="text-muted"><i class="bi bi-fan me-2 text-muted"></i>Fan System</span>
+                                    <span id="hw-fan" class="text-muted fw-semibold">--</span>
+                                </li>
+                                <li
+                                    class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 border-0">
+                                    <span class="text-muted"><i class="bi bi-droplet me-2 text-muted"></i>Fogger</span>
+                                    <span id="hw-fogger" class="text-muted fw-semibold">--</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="mt-4 mb-2 text-center text-muted" style="font-size: 0.8rem;">
+                    &copy; 2026 OT Sterilization System
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+    <script>
+        document.getElementById('nav-dashboard').classList.add('active');
+
+        document.getElementById('btnDashExport').addEventListener('click', () => {
+            window.location.href = '/api/reports/download?type=csv&range=daily';
+        });
+
+        document.getElementById('btnDashQuickStart').addEventListener('click', () => {
+            window.location.href = '/sterilization-control';
+        });
+
+        // -------------------------------------------------------
+        // Hardware-Aware Dashboard Polling
+        // Only updates UI when real ESP32 data is received
+        // -------------------------------------------------------
+        let deviceOnline = false;
+
+        async function pollSensorData() {
+            try {
+                const res = await fetch('/api/sensors/latest');
+                if (!res.ok) { setOffline(); return; }
+                const json = await res.json();
+                const d = json.data || json;
+                if (!d || d.temperature == null) { setOffline(); return; }
+
+                // Use the server-computed deviceOnline flag (set by SensorController
+                // using a 30-second heartbeat window). This avoids the JS timezone
+                // mismatch bug where LocalDateTime from Java (IST, no offset) would
+                // be mis-parsed by JS Date as UTC, making the gap always appear huge.
+                if (!d.deviceOnline) {
+                    setOffline();
+                    return;
+                }
+
+                // Device is confirmed online
+                deviceOnline = true;
+
+                // --- Live Sensor Tiles ---
+                document.getElementById('dash-temp').textContent = parseFloat(d.temperature).toFixed(1);
+                document.getElementById('dash-hum').textContent = parseFloat(d.humidity).toFixed(1);
+                document.getElementById('dash-aqi').textContent = Math.round(d.co2 || d.pm25 || 0);
+                document.getElementById('dash-lux').textContent = Math.round(d.lux || d.light || 0);
+
+                // --- Status Cards ---
+                // Use the correct DTO field names: motionDetected and doorClosed
+                const pirActive = d.motionDetected === true || d.motionDetected === 'true';
+                const doorClosed = d.doorClosed === true || d.doorClosed === 'true';
+
+                const otStatusEl = document.getElementById('dash-ot-status');
+                otStatusEl.textContent = pirActive ? 'MOTION DETECTED' : 'ROOM EMPTY';
+                otStatusEl.className = 'fw-bold fs-5 ' + (pirActive ? 'text-warning' : 'text-success');
+
+                const doorEl = document.getElementById('dash-door-status');
+                doorEl.textContent = doorClosed ? 'CLOSED' : 'OPEN';
+                doorEl.className = 'fw-bold fs-5 ' + (doorClosed ? 'text-success' : 'text-danger');
+
+                const aqi = d.co2 || d.pm25 || 0;
+                const aqiStatusEl = document.getElementById('dash-aqi-status');
+                let aqiLabel, aqiClass;
+                if (aqi <= 50) { aqiLabel = 'GOOD'; aqiClass = 'text-success'; }
+                else if (aqi <= 100) { aqiLabel = 'SATISFACTORY'; aqiClass = 'text-success'; }
+                else if (aqi <= 200) { aqiLabel = 'MODERATE'; aqiClass = 'text-warning'; }
+                else if (aqi <= 300) { aqiLabel = 'POOR'; aqiClass = 'text-warning'; }
+                else if (aqi <= 400) { aqiLabel = 'VERY POOR'; aqiClass = 'text-danger'; }
+                else { aqiLabel = 'SEVERE'; aqiClass = 'text-danger'; }
+                aqiStatusEl.textContent = aqiLabel;
+                aqiStatusEl.className = 'fw-bold fs-5 ' + aqiClass;
+
+                // Sterilization Status — reflects actual process state AND door
+                const sterilEl = document.getElementById('dash-steril-status');
+                const processState = d.processState || 'IDLE';
+                if (!doorClosed) {
+                    sterilEl.textContent = 'DOOR OPEN';
+                    sterilEl.className = 'fw-bold fs-5 text-danger';
+                } else if (processState === 'EMERGENCY') {
+                    sterilEl.textContent = 'EMERGENCY';
+                    sterilEl.className = 'fw-bold fs-5 text-danger';
+                } else if (processState === 'READY') {
+                    sterilEl.textContent = 'READY';
+                    sterilEl.className = 'fw-bold fs-5 text-success';
+                } else if (processState !== 'IDLE') {
+                    sterilEl.textContent = processState.replace('_', ' ');
+                    sterilEl.className = 'fw-bold fs-5 text-warning';
+                } else {
+                    sterilEl.textContent = 'IDLE';
+                    sterilEl.className = 'fw-bold fs-5 text-primary';
+                }
+
+                // --- System Overview Health Ring ---
+                // Use the live process state and sensor readings instead of a fixed count.
+                const dhtActive = Number.isFinite(d.temperature) && d.temperature > 0 || Number.isFinite(d.humidity) && d.humidity > 0;
+                const mq135Active = Number.isFinite(d.co2) && (d.co2 || 0) > 0;
+                const ldrActive = Number.isFinite(d.light) && (d.light || 0) > 0;
+                const pirSensorOnline = d.motionDetected === true || d.motionDetected === 'true';
+                const relayActive = ['UV_ACTIVE', 'FOG_ACTIVE', 'FAN_ACTIVE'].includes(processState);
+                const fanActive = processState === 'FAN_ACTIVE';
+                const foggerActive = processState === 'FOG_ACTIVE';
+
+                const healthItems = [
+                    { id: 'hw-pir', active: pirSensorOnline },
+                    { id: 'hw-dht', active: dhtActive },
+                    { id: 'hw-mq', active: mq135Active },
+                    { id: 'hw-ldr', active: ldrActive },
+                    { id: 'hw-relay', active: relayActive },
+                    { id: 'hw-fan', active: fanActive },
+                    { id: 'hw-fogger', active: foggerActive }
+                ];
+
+                const activeSensors = healthItems.filter(item => item.active).length;
+                const totalSensors = healthItems.length;
+                const activePct = Math.round((activeSensors / totalSensors) * 100);
+
+                document.getElementById('health-pct').textContent = activePct + '%';
+                document.getElementById('health-pct').className = 'fs-2 fw-bold ' + (activePct >= 80 ? 'text-success' : 'text-warning');
+                document.getElementById('health-label').textContent = activePct === 100 ? 'All Systems Online' : `${activeSensors}/${totalSensors} Systems Active`;
+                document.getElementById('health-ring').style.background =
+                    `conic-gradient(var(--success) ${activePct}%, #eee 0)`;
+
+                function setActive(id) {
+                    const el = document.getElementById(id);
+                    if (el) { el.textContent = 'Active'; el.className = 'text-success fw-semibold'; }
+                }
+                function setInactive(id) {
+                    const el = document.getElementById(id);
+                    if (el) { el.textContent = 'Inactive'; el.className = 'text-muted fw-semibold'; }
+                }
+
+                healthItems.forEach(({ id, active }) => {
+                    if (active) setActive(id);
+                    else setInactive(id);
+                });
+
+
+
+            } catch (e) { setOffline(); }
+        }
+
+        function setOffline() {
+            deviceOnline = false;
+
+            // Blanket wipe UI statuses
+            const elements = ['dash-ot-status', 'dash-door-status', 'dash-steril-status', 'dash-aqi-status'];
+            elements.forEach(id => {
+                if (document.getElementById(id)) {
+                    document.getElementById(id).textContent = '--';
+                    document.getElementById(id).className = 'fw-bold fs-5 text-muted';
+                }
+            });
+
+            if (document.getElementById('health-pct')) {
+                document.getElementById('health-pct').textContent = 'OFFLINE';
+                document.getElementById('health-pct').className = 'fs-3 fw-bold text-danger';
+                document.getElementById('health-label').textContent = 'Hardware Disconnected';
+                document.getElementById('health-ring').style.background = 'conic-gradient(var(--danger) 100%, #eee 0)';
+            }
+
+            function setInactiveErr(id) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.textContent = 'Error / Offline';
+                    el.className = 'text-danger fw-semibold';
+                }
+            }
+            setInactiveErr('hw-pir');
+            setInactiveErr('hw-dht');
+            setInactiveErr('hw-mq');
+            setInactiveErr('hw-ldr');
+            setInactiveErr('hw-relay');
+            setInactiveErr('hw-fan');
+            setInactiveErr('hw-fogger');
+        }
+
+        // Start polling
+        pollSensorData();
+        setInterval(pollSensorData, 5000);
+    </script>
+</body>
+
+</html>

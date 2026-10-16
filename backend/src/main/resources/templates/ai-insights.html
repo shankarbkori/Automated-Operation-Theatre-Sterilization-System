@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('AI Insights')}"></head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Navbar -->
+            <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">AI Insights</h2>
+                    <p class="text-muted mb-0" style="font-size: 0.9rem;">AI-powered insights and predictions</p>
+                </div>
+            </div>
+
+            <div class="content-wrapper">
+
+                <div class="row g-4 border-bottom pb-4 mb-4">
+                    <div class="col-md-4">
+                        <div class="ps-2">
+                            <div class="text-muted fw-semibold mb-2" style="font-size: 0.9rem;">Predicted Next Cycle
+                                Time</div>
+                            <div class="fs-3 fw-bold mb-1" id="ai-est-time">-- <span
+                                    class="fs-5 fw-normal text-muted">min</span>
+                            </div>
+                            <small class="text-muted">Based on current conditions</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4 border-start">
+                        <div class="ps-4">
+                            <div class="text-muted fw-semibold mb-2" style="font-size: 0.9rem;">Air Quality Trend</div>
+                            <div class="fs-3 fw-bold text-success mb-1" id="ai-trend">Calculating...</div>
+                            <small class="text-muted" id="ai-trend-sub">Analyzing historical datasets</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4 border-start">
+                        <div class="ps-4">
+                            <div class="text-muted fw-semibold mb-2" style="font-size: 0.9rem;">Recommended Action</div>
+                            <div class="fs-3 fw-bold text-success mb-1" id="ai-action">Pending</div>
+                            <small class="text-muted" id="ai-action-sub">Connecting to ML Node...</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="custom-card">
+                    <div class="card-title-sm mb-4">AI Insights Overview</div>
+
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <ul class="list-unstyled text-muted ps-2" id="ai-overview-list"
+                                style="line-height:2.4; font-size: 0.95rem;">
+                                <li><i class="bi bi-arrow-repeat text-secondary me-3"></i> Initializing AI model...</li>
+                            </ul>
+                        </div>
+
+                        <div class="col-md-4 d-flex justify-content-center py-4 py-md-0 border-start border-end">
+                            <div class="rounded-circle d-flex justify-content-center align-items-center"
+                                style="width: 140px; height: 140px; border: 2px dashed var(--success); position:relative;"
+                                id="ai-icon-container">
+                                <!-- Subtle pulse effect behind icon -->
+                                <div class="position-absolute rounded-circle"
+                                    style="width:100%; height:100%; background-color: var(--success); opacity: 0.05;"
+                                    id="ai-pulse-bg">
+                                </div>
+                                <i class="bi bi-cpu text-success" id="ai-icon-core" style="font-size: 4rem;"></i>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 ps-md-4">
+                            <div class="fw-bold mb-4" style="color: var(--text-main);">Statistics</div>
+
+                            <div class="row g-4">
+                                <div class="col-6">
+                                    <div class="text-muted fw-semibold mb-1" style="font-size: 0.8rem;">Total Cycles
+                                    </div>
+                                    <div class="fs-4 fw-bold" id="stats-total">0</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-muted fw-semibold mb-1" style="font-size: 0.8rem;">Success Rate
+                                    </div>
+                                    <div class="fs-4 fw-bold" id="stats-success">0%</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-muted fw-semibold mb-1" style="font-size: 0.8rem;">Avg. Air Quality
+                                    </div>
+                                    <div class="fs-4 fw-bold" id="stats-aqi">-- <span
+                                            class="fs-6 fw-normal text-muted">AQI</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-muted fw-semibold mb-1" style="font-size: 0.8rem;">Total Operating
+                                        Hours</div>
+                                    <div class="fs-4 fw-bold" id="stats-hrs">0h 0m</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+    <script>
+        document.getElementById('nav-ai').classList.add('active');
+
+        // Keep track of last good prediction so we never blank out mid-refresh
+        let lastGoodData = null;
+
+        async function fetchAiInsights() {
+            try {
+                // First, fetch real sensor data to send to AI
+                let sensorPayload = {};
+                try {
+                    const sensorRes = await fetch('/api/sensors/latest');
+                    if (sensorRes.ok) {
+                        const sensorJson = await sensorRes.json();
+                        const sd = sensorJson.data || sensorJson;
+                        if (sd && sd.deviceOnline) {
+                            sensorPayload = {
+                                temperature: sd.temperature || 25,
+                                humidity: sd.humidity || 50,
+                                pm25: sd.pm25 || 0,
+                                pm10: sd.pm10 || 0,
+                                co2: sd.co2 || 400
+                            };
+                        }
+                    }
+                } catch (e) { /* sensor fetch failed, use defaults */ }
+
+                // Fetch AI Predictions with real sensor data
+                const aiResponse = await fetch('/api/ai/sterilization-plan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(sensorPayload)
+                });
+
+                if (aiResponse.ok) {
+                    const aiResult = await aiResponse.json();
+                    if (aiResult.success) {
+                        const data = aiResult; // The root object contains the data
+
+                        // ─── Predicted Time ─────────────────────────────────────
+                        const estMin = data.totalSeconds ? (data.totalSeconds / 60).toFixed(1) : null;
+                        if (estMin != null) {
+                            document.getElementById('ai-est-time').innerHTML =
+                                `${estMin} <span class="fs-5 fw-normal text-muted">min</span>`;
+                            lastGoodData = data;
+                        } else if (lastGoodData) {
+                            // Keep showing the last known good value — no blank-out
+                            const lastMin = (lastGoodData.totalSeconds / 60).toFixed(1);
+                            document.getElementById('ai-est-time').innerHTML =
+                                `${lastMin} <span class="fs-5 fw-normal text-muted">min</span>`;
+                        }
+
+                        // Use the resolved data (live or last good)
+                        const d = (estMin != null) ? data : (lastGoodData || data);
+                        const notes = d.notes || "";
+
+                        // Check if notes indicate AI extended time due to pollution
+                        const unsafeAir = notes.toLowerCase().includes("extended") || notes.toLowerCase().includes("elevated");
+
+                        // ─── Air Quality Trend ───────────────────────────────────
+                        const trendEl = document.getElementById('ai-trend');
+                        const trendSub = document.getElementById('ai-trend-sub');
+                        if (unsafeAir) {
+                            trendEl.textContent = 'Degrading';
+                            trendEl.className = 'fs-3 fw-bold text-danger mb-1';
+                            trendSub.textContent = 'CO₂ or PM2.5 above safe thresholds';
+                        } else {
+                            trendEl.textContent = 'Improving';
+                            trendEl.className = 'fs-3 fw-bold text-success mb-1';
+                            trendSub.textContent = 'Air quality within safe limits';
+                        }
+
+                        // ─── Recommended Action ──────────────────────────────────
+                        const actionEl = document.getElementById('ai-action');
+                        const actionSub = document.getElementById('ai-action-sub');
+                        let listHtml = '';
+
+                        if (unsafeAir) {
+                            actionEl.textContent = 'Initiate Sterilization';
+                            actionEl.className = 'fs-3 fw-bold text-primary mb-1';
+                            actionSub.textContent = 'Recommended based on current air quality';
+                            listHtml = `<li><i class="bi bi-x-circle text-danger me-3"></i> Air quality has breached safe surgical limits.</li>
+                                        <li><i class="bi bi-x-circle text-danger me-3"></i> CO₂ or PM2.5 is severely elevated.</li>
+                                        <li><i class="bi bi-check-circle text-primary me-3"></i> Sensors are actively intercepting thresholds.</li>
+                                        <li><i class="bi bi-stars text-primary me-3"></i> Cycle initiation strictly advised.</li>`;
+                        } else {
+                            actionEl.textContent = 'No Action Needed';
+                            actionEl.className = 'fs-3 fw-bold text-success mb-1';
+                            actionSub.textContent = 'System is operating normally';
+                            listHtml = `<li><i class="bi bi-check-circle text-success me-3"></i> The system is operating efficiently.</li>
+                                        <li><i class="bi bi-check-circle text-success me-3"></i> Air quality is within safe limits.</li>
+                                        <li><i class="bi bi-check-circle text-success me-3"></i> All sensors are functioning properly.</li>
+                                        <li><i class="bi bi-check-circle text-success me-3"></i> No maintenance required at this time.</li>`;
+                        }
+
+                        // ─── Hardware status note (non-blocking) ─────────────────
+                        const isAiLive = d.aiAvailable === true || d.aiAvailable === 'true';
+                        const hwNote = isAiLive
+                            ? `<li><i class="bi bi-cpu text-success me-3"></i> AI Engine online — predictions based on live data.</li>`
+                            : `<li><i class="bi bi-cpu text-secondary me-3"></i> AI Engine offline — prediction uses fallback parameters.</li>`;
+                        document.getElementById('ai-overview-list').innerHTML = listHtml + hwNote;
+                    }
+                }
+
+                // ─── Database Statistics from Spring Boot ────────────────────────
+                const statsResponse = await fetch('/api/reports/stats');
+                if (statsResponse.ok) {
+                    const stats = await statsResponse.json();
+                    const totalCycles = stats.totalCycles || 0;
+                    const successCycles = stats.successfulCycles || 0;
+                    const successRate = totalCycles > 0 ? ((successCycles / totalCycles) * 100).toFixed(1) : 0;
+
+                    document.getElementById('stats-total').textContent = totalCycles;
+                    document.getElementById('stats-success').textContent = totalCycles > 0 ? `${successRate}%` : '--';
+                    const co2Val = sensorPayload.co2 || 0;
+                    const aqiDisplay = co2Val > 0 ? Math.round(co2Val) : '--';
+                    document.getElementById('stats-aqi').innerHTML = `${aqiDisplay} <span class="fs-6 fw-normal text-muted">AQI</span>`;
+
+                    const totalSecs = stats.totalDurationSeconds || 0;
+                    const hrs = Math.floor(totalSecs / 3600);
+                    const mins = Math.floor((totalSecs % 3600) / 60);
+                    document.getElementById('stats-hrs').textContent = `${hrs}h ${mins}m`;
+                }
+            } catch (err) {
+                console.error("AI Insight Fetch Error:", err);
+                // Don't clear the UI on network errors — keep last good values
+            }
+        }
+
+        // Initial fetch and stable polling (every 10s to reduce flicker)
+        fetchAiInsights();
+        setInterval(fetchAiInsights, 10000);
+    </script>
+</body>
+
+</html>

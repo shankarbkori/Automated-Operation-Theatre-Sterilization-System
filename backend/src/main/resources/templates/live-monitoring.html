@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Live Monitoring')}"></head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Navbar -->
+            <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Live Monitoring</h2>
+                    <p class="text-muted mb-0" style="font-size: 0.9rem;">Real-time monitoring of all sensors and system
+                        parameters</p>
+                </div>
+                <div>
+                    <button id="btnRefresh" class="btn btn-outline-custom"><i
+                            class="bi bi-arrow-clockwise me-2"></i>Refresh</button>
+                </div>
+            </div>
+
+            <div class="content-wrapper">
+                <div class="row g-4 flex-md-row flex-column-reverse">
+                    <!-- Left Column (Sensors) -->
+                    <div class="col-lg-5 col-xl-4">
+                        <div class="row g-3">
+
+                            <!-- Temperature -->
+                            <div class="col-6 col-sm-6">
+                                <div class="custom-card h-100 mb-0 p-3 border-start border-4 border-secondary"
+                                    id="card-temp">
+                                    <small class="text-muted fw-semibold d-flex align-items-center mb-2"><i
+                                            class="bi bi-thermometer-half me-2 fs-5 text-primary"></i>Temperature</small>
+                                    <div class="d-flex justify-content-between align-items-end">
+                                        <div class="fs-4 fw-bold"><span id="live-temp">--</span> <span
+                                                class="fs-6 fw-normal text-muted">°C</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Humidity -->
+                            <div class="col-6 col-sm-6">
+                                <div class="custom-card h-100 mb-0 p-3 border-start border-4 border-secondary"
+                                    id="card-hum">
+                                    <small class="text-muted fw-semibold d-flex align-items-center mb-2"><i
+                                            class="bi bi-droplet-half me-2 fs-5 text-info"></i>Humidity</small>
+                                    <div class="d-flex justify-content-between align-items-end">
+                                        <div class="fs-4 fw-bold"><span id="live-hum">--</span> <span
+                                                class="fs-6 fw-normal text-muted">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Air Quality -->
+                            <div class="col-6 col-sm-6">
+                                <div class="custom-card h-100 mb-0 p-3 border-start border-4 border-secondary"
+                                    id="card-aqi">
+                                    <small class="text-muted fw-semibold d-flex align-items-center mb-2"><i
+                                            class="bi bi-clouds me-2 fs-5 text-warning"></i>Air Quality (MQ135)</small>
+                                    <div class="d-flex justify-content-between align-items-end">
+                                        <div class="fs-4 fw-bold"><span id="live-aqi">--</span> <span
+                                                class="fs-6 fw-normal text-muted">PPM</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PIR Sensor -->
+                            <div class="col-6 col-sm-6">
+                                <div class="custom-card h-100 mb-0 p-3 border-start border-4 border-secondary"
+                                    id="card-pir">
+                                    <small class="text-muted fw-semibold d-flex align-items-center mb-2"><i
+                                            class="bi bi-person-bounding-box me-2 fs-5 text-muted"></i>PIR
+                                        Sensor</small>
+                                    <div class="d-flex flex-column">
+                                        <div class="fs-5 fw-bold text-muted" id="live-pir">--</div>
+                                        <small class="text-muted mt-1" id="live-pir-sub"
+                                            style="font-size: 0.7rem;">Waiting for device...</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Door Status -->
+                            <div class="col-6 col-sm-6">
+                                <div class="custom-card h-100 mb-0 p-3 border-start border-4 border-secondary"
+                                    id="card-door">
+                                    <small class="text-muted fw-semibold d-flex align-items-center mb-2"><i
+                                            class="bi bi-door-closed me-2 fs-5 text-muted"></i>Door Status</small>
+                                    <div class="d-flex flex-column">
+                                        <div class="fs-5 fw-bold text-muted" id="live-door">--</div>
+                                        <small class="text-muted mt-1" id="live-door-sub">Waiting for device...</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- UV Lamp (LDR) -->
+                            <div class="col-6 col-sm-6">
+                                <div class="custom-card h-100 mb-0 p-3 border-start border-4 border-secondary"
+                                    id="card-uv">
+                                    <small class="text-muted fw-semibold d-flex align-items-center mb-2"><i
+                                            class="bi bi-brightness-high me-2 fs-5 text-warning"></i>UV Lamp
+                                        (LDR)</small>
+                                    <div class="d-flex justify-content-between align-items-end">
+                                        <div class="fs-5 fw-bold text-muted" id="live-uv">--</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fan Status -->
+                            <div class="col-6 col-sm-6">
+                                <div class="custom-card h-100 mb-0 p-3 border-start border-4 border-secondary"
+                                    id="card-fan">
+                                    <small class="text-muted fw-semibold d-flex align-items-center mb-2"><i
+                                            class="bi bi-fan me-2 fs-5 text-muted"></i>Fan Status</small>
+                                    <div class="d-flex justify-content-between align-items-end">
+                                        <div class="fs-5 fw-bold text-muted" id="live-fan">--</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fogger Status -->
+                            <div class="col-6 col-sm-6">
+                                <div class="custom-card h-100 mb-0 p-3 border-start border-4 border-secondary"
+                                    id="card-fog">
+                                    <small class="text-muted fw-semibold d-flex align-items-center mb-2"><i
+                                            class="bi bi-droplet-half me-2 fs-5 text-muted"></i>Fogger Status</small>
+                                    <div class="d-flex justify-content-between align-items-end">
+                                        <div class="fs-5 fw-bold text-muted" id="live-fog">--</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Right Column (Charts) -->
+                    <div class="col-lg-7 col-xl-8">
+                        <div class="custom-card mb-4" style="height: calc(33.333% - 16px);">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="card-title-sm mb-0">Temperature (°C)</div>
+                            </div>
+                            <div style="height: calc(100% - 30px);"><canvas id="mainTempChart"></canvas></div>
+                        </div>
+                        <div class="custom-card mb-4" style="height: calc(33.333% - 16px);">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="card-title-sm mb-0">Humidity (%)</div>
+                            </div>
+                            <div style="height: calc(100% - 30px);"><canvas id="mainHumChart"></canvas></div>
+                        </div>
+                        <div class="custom-card mb-0" style="height: calc(33.333% - 16px);">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="card-title-sm mb-0">Air Quality (PPM)</div>
+                            </div>
+                            <div style="height: calc(100% - 30px);"><canvas id="mainAqiChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+    <script>
+        document.getElementById('nav-live-monitoring').classList.add('active');
+
+        // -------------------------------------------------------
+        // Chart.js Initialization
+        // -------------------------------------------------------
+        const MAX_POINTS = 20;
+
+        function makeChart(id, label, color) {
+            const ctx = document.getElementById(id).getContext('2d');
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: label,
+                        data: [],
+                        borderColor: color,
+                        backgroundColor: color + '22',
+                        borderWidth: 2,
+                        pointRadius: 3,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { maxTicksLimit: 6, font: { size: 10 } }, grid: { display: false } },
+                        y: { ticks: { font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        let tempChart = makeChart('mainTempChart', 'Temperature', '#3b82f6');
+        let humChart = makeChart('mainHumChart', 'Humidity', '#06b6d4');
+        let aqiChart = makeChart('mainAqiChart', 'Air Quality', '#f59e0b');
+
+        function pushPoint(chart, label, value) {
+            chart.data.labels.push(label);
+            chart.data.datasets[0].data.push(value);
+            if (chart.data.labels.length > MAX_POINTS) {
+                chart.data.labels.shift();
+                chart.data.datasets[0].data.shift();
+            }
+            chart.update('none');
+        }
+
+        // -------------------------------------------------------
+        // Border helper
+        // -------------------------------------------------------
+        function setBorder(cardId, color) {
+            const el = document.getElementById(cardId);
+            el.classList.remove('border-secondary', 'border-success', 'border-danger', 'border-warning');
+            el.classList.add('border-' + color);
+        }
+
+        // -------------------------------------------------------
+        // Refresh: reset charts and restart from current time
+        // -------------------------------------------------------
+        document.getElementById('btnRefresh').addEventListener('click', () => {
+            [tempChart, humChart, aqiChart].forEach(c => {
+                c.data.labels = [];
+                c.data.datasets[0].data = [];
+                c.update();
+            });
+        });
+
+        // -------------------------------------------------------
+        // Hardware-Aware Polling — only updates when ESP32 sends data
+        // -------------------------------------------------------
+        async function pollLiveData() {
+            try {
+                const res = await fetch('/api/sensors/latest');
+                if (!res.ok) return;
+                const json = await res.json();
+                const d = json.data || json;
+                if (!d || d.temperature == null) return;
+
+                const readingTime = new Date(d.createdAt).getTime();
+                const currentTime = new Date().getTime();
+
+                // Server-authoritative: use deviceOnline flag (backend checks lastSeenAt < 10s)
+                if (!d.deviceOnline) {
+                    const idsToBlank = ['live-temp', 'live-hum', 'live-aqi', 'live-pir', 'live-door', 'live-uv', 'live-fan', 'live-fogger'];
+                    idsToBlank.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            el.textContent = '--';
+                            el.className = 'fs-5 fw-bold text-muted';
+                        }
+                    });
+
+                    if (document.getElementById('live-pir-sub')) document.getElementById('live-pir-sub').textContent = 'Disconnected';
+                    if (document.getElementById('live-door-sub')) document.getElementById('live-door-sub').textContent = 'Disconnected';
+
+                    const cardIds = ['card-temp', 'card-hum', 'card-aqi', 'card-pir', 'card-door', 'card-uv', 'card-fan', 'card-fogger'];
+                    cardIds.forEach(id => setBorder(id, 'secondary'));
+                    return;
+                }
+
+                const now = new Date().toLocaleTimeString();
+
+                // --- Temperature ---
+                const temp = parseFloat(d.temperature);
+                document.getElementById('live-temp').textContent = temp.toFixed(1);
+                setBorder('card-temp', temp < 15 || temp > 40 ? 'danger' : 'success');
+                pushPoint(tempChart, now, temp);
+
+                // --- Humidity ---
+                const hum = parseFloat(d.humidity);
+                document.getElementById('live-hum').textContent = hum.toFixed(1);
+                setBorder('card-hum', hum < 30 || hum > 70 ? 'warning' : 'success');
+                pushPoint(humChart, now, hum);
+
+                // --- Air Quality ---
+                const aqi = Math.round(d.co2 || d.pm25 || d.airQuality || 0);
+                document.getElementById('live-aqi').textContent = aqi;
+                setBorder('card-aqi', aqi > 300 ? 'danger' : 'success');
+                pushPoint(aqiChart, now, aqi);
+
+                // --- PIR Sensor ---
+                const pirActive = d.motionDetected === true;
+                const pirEl = document.getElementById('live-pir');
+                pirEl.textContent = pirActive ? 'OCCUPIED' : 'ROOM EMPTY';
+                pirEl.className = 'fs-5 fw-bold ' + (pirActive ? 'text-danger' : 'text-success');
+                document.getElementById('live-pir-sub').textContent = pirActive ? 'Motion Detected' : 'No Motion Detected';
+                // Red border when occupied, green when empty
+                setBorder('card-pir', pirActive ? 'danger' : 'success');
+
+                // --- Door Status ---
+                const doorOpen = d.doorClosed === false;
+                const doorEl = document.getElementById('live-door');
+                doorEl.textContent = doorOpen ? 'OPEN' : 'CLOSED';
+                doorEl.className = 'fs-5 fw-bold ' + (doorOpen ? 'text-danger' : 'text-success');
+                document.getElementById('live-door-sub').textContent = doorOpen ? 'Breach' : 'Secure';
+                // Red border when open, green when closed
+                setBorder('card-door', doorOpen ? 'danger' : 'success');
+
+                // --- UV Lamp / Fan / Fogger Status ---
+                // Use the device's actual process state. The ESP32 sends
+                // processState = UV_ACTIVE / FOG_ACTIVE / FAN_ACTIVE and does not
+                // include fanStatus/foggerStatus fields in the sensor payload.
+                const lux = d.lux || d.light || 0;
+                const processState = String(d.processState || '').toUpperCase();
+                const uvOn = processState === 'UV_ACTIVE' || lux > 500;
+                const fanOn = processState === 'FAN_ACTIVE';
+                const fogOn = processState === 'FOG_ACTIVE';
+
+                const uvEl = document.getElementById('live-uv');
+                uvEl.textContent = uvOn ? 'ON' : 'OFF';
+                uvEl.className = 'fs-5 fw-bold ' + (uvOn ? 'text-warning' : 'text-muted');
+                setBorder('card-uv', uvOn ? 'warning' : 'secondary');
+
+                const fanEl = document.getElementById('live-fan');
+                fanEl.textContent = fanOn ? 'ON' : 'OFF';
+                fanEl.className = 'fs-5 fw-bold ' + (fanOn ? 'text-success' : 'text-muted');
+                setBorder('card-fan', fanOn ? 'success' : 'secondary');
+
+                const fogEl = document.getElementById('live-fog');
+                fogEl.textContent = fogOn ? 'ON' : 'OFF';
+                fogEl.className = 'fs-5 fw-bold ' + (fogOn ? 'text-info' : 'text-muted');
+                setBorder('card-fog', fogOn ? 'info' : 'secondary');
+
+            } catch (e) {
+                // Device offline — values remain '--'
+            }
+        }
+
+        pollLiveData();
+        setInterval(pollLiveData, 3000);
+    </script>
+</body>
+
+</html>
